@@ -1,0 +1,407 @@
+[
+  {
+    "title": "Accommodation Office",
+    "department": "admin",
+    "phone": "02-524-5093"
+  },
+  {
+    "title": "Admissions and Scholarships Unit, Office of Student Affairs",
+    "department": "admin",
+    "phone": "02-524-5032-33"
+  },
+  {
+    "title": "Agricultural Business Management Program (SERD-ABM)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Agricultural Systems & Engineering (SERD-ASE)",
+    "department": "serd",
+    "phone": "02-524-5485"
+  },
+  {
+    "title": "AIT Alumni Assiciation Office",
+    "department": "admin",
+    "phone": "02-524-5058"
+  },
+  {
+    "title": "AIT Extension (Continuing Education)",
+    "department": "admin",
+    "phone": "02-524-6330"
+  },
+  {
+    "title": "AIT Hotel and Conference Center",
+    "department": "admin",
+    "phone": "02-524-5250"
+  },
+  {
+    "title": "AIT International School",
+    "department": "admin",
+    "phone": "02-524-5984"
+  },
+  {
+    "title": "AIT Solutions (Consultancy)",
+    "department": "admin",
+    "phone": "02-524-6388"
+  },
+  {
+    "title": "Aqua-Centre (SERD-AQUA CENT)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Aquaculture and Aquatic Resources Management Program (SERD-AARM)",
+    "department": "serd",
+    "phone": "02-524-5221"
+  },
+  {
+    "title": "Bioprocess Technology Program (SERD-BPT)",
+    "department": "serd",
+    "phone": "02-524-6117"
+  },
+  {
+    "title": "Call Center",
+    "department": "admin",
+    "phone": "02-524-5800"
+  },
+  {
+    "title": "Centre of Excellence in Nanotechnology",
+    "department": "set",
+    "phone": "02-524-5009"
+  },
+  {
+    "title": "Civil and Infrastructure Engineering (SET-CIE)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Climate Change and Sustainable Development Field of Study (SERD-CCSD)",
+    "department": "serd",
+    "phone": "02-524-6679"
+  },
+  {
+    "title": "Computer Science (SET-CS)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Computer Science and Information  Management Program (SET-CSIM)",
+    "department": "set",
+    "phone": "02-524-5700"
+  },
+  {
+    "title": "Construction Engineering & Infrastructure Management (SET-CEIM)",
+    "department": "set",
+    "phone": "02-524-6060"
+  },
+  {
+    "title": "Department of Civil and Infrastructure Engineering (SET-CIE)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Department of Development and Sustainability (SERD-DS)",
+    "department": "serd",
+    "phone": "02-524-6387"
+  },
+  {
+    "title": "Department of Energy, Environment and Climate Change (SERD-EECC)",
+    "department": "serd",
+    "phone": "02-524-6165"
+  },
+  {
+    "title": "Department of Food, Agriculture and Bioresources (SERD-FAB)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Department of Industrial Systems Engineering (SET-ISE)",
+    "department": "set",
+    "phone": "02-524-5694"
+  },
+  {
+    "title": "Department of Information and Communication Technologies (SET-ICT)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Disaster Preparedness, Mitigation and Management Program (SERD-DPMM)",
+    "department": "serd",
+    "phone": "02-524-6430"
+  },
+  {
+    "title": "Emergency and Ambulance",
+    "department": "admin",
+    "phone": "02-254-5555"
+  },
+  {
+    "title": "Energy (SERD-E)",
+    "department": "serd",
+    "phone": "02-524-6210"
+  },
+  {
+    "title": "Energy, Environment and Climate Change (SERD-EECC)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Environmental Engineering & Management (SERD-EEM)",
+    "department": "serd",
+    "phone": "02-524-5628"
+  },
+  {
+    "title": "Executive MBA Program (SOM-EMBA)",
+    "department": "som",
+    "phone": "02-524-6375"
+  },
+  {
+    "title": "External Relations and Communications Office (ERCO)",
+    "department": "admin",
+    "phone": "02-524-5010"
+  },
+  {
+    "title": "Facilities",
+    "department": "admin",
+    "phone": "02-524-5800"
+  },
+  {
+    "title": "Food Engineering & Bioprocess Technology (SERD-FEBT)",
+    "department": "serd",
+    "phone": "02-524-5496"
+  },
+  {
+    "title": "Food, Agriculture and Bioresources (SERD-FAB)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Fundraising Office",
+    "department": "admin",
+    "phone": "02-524-6336"
+  },
+  {
+    "title": "Gender And Development Studies Program (SERD-GDS)",
+    "department": "serd",
+    "phone": "02-524-5668"
+  },
+  {
+    "title": "Geosystem Exploration & Petroleum Geoengineering (SET-GEPG)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Geotechnical & Geoenvironment Engineering (SET-GGE)",
+    "department": "set",
+    "phone": "02-524-5580"
+  },
+  {
+    "title": "Geotechnical and Earth Resources Engineering (SET-GTE)",
+    "department": "set",
+    "phone": "02-524-6057"
+  },
+  {
+    "title": "Government Relations Unit (GRU)",
+    "department": "admin",
+    "phone": "02-524-5022"
+  },
+  {
+    "title": "Helpdesk and Internet",
+    "department": "admin",
+    "phone": "02-524-6082"
+  },
+  {
+    "title": "Industrial and Manufacturing Engineering (SET - IME)",
+    "department": "set",
+    "phone": "02-524-5675"
+  },
+  {
+    "title": "Industrial Engineering & Management (SET-IEM)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Industrial System Engineering Program (SET-ISE)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Information & Communication Technologies (SET-ICT)",
+    "department": "set",
+    "phone": "02-524-5735"
+  },
+  {
+    "title": "Information Management (SET-IM)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "intERlab",
+    "department": "set",
+    "phone": "02-524-6611"
+  },
+  {
+    "title": "Language Center",
+    "department": "admin",
+    "phone": "02-524-6623"
+  },
+  {
+    "title": "Main Gate, Security and Fire Emergency",
+    "department": "admin",
+    "phone": "02-524-6000"
+  },
+  {
+    "title": "Mechatronics (SET-MEC)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Mechatronics Program (SET-MT)",
+    "department": "set",
+    "phone": "02-524-6601"
+  },
+  {
+    "title": "Media and Communications Unit (MCU)",
+    "department": "admin",
+    "phone": "02-524-5830"
+  },
+  {
+    "title": "Medical Center",
+    "department": "admin",
+    "phone": "02-524-5286"
+  },
+  {
+    "title": "Microelectronics and Embedded Systems (SET-MES)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Nanotechnology (SET-NANO)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Natural Resources Management (SERD-NRM)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Office of Advancement and Alumni Affairs",
+    "department": "admin",
+    "phone": "02-524-6302"
+  },
+  {
+    "title": "Office of International Affairs",
+    "department": "admin",
+    "phone": "02-524-5010"
+  },
+  {
+    "title": "Office of Public Affairs",
+    "department": "admin",
+    "phone": "02-524-5830"
+  },
+  {
+    "title": "Office of the Dean of SERD (SERD-DEAN)",
+    "department": "serd",
+    "phone": "02-524-6069"
+  },
+  {
+    "title": "Office of the Dean SET (SET-DEAN)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Office of Thailand Affairs",
+    "department": "admin",
+    "phone": "02-524-6119"
+  },
+  {
+    "title": "Offshore Technology and Management (SET-OTM)",
+    "department": "set",
+    "phone": "02-524-5574"
+  },
+  {
+    "title": "Pulp & Paper Technology (SERD-P&PT)",
+    "department": "serd",
+    "phone": "02-524-6678"
+  },
+  {
+    "title": "Regional & Rural Development Planning (SERD-RRDP)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Regional Network Office for Urban Safety (SET-RNUS)",
+    "department": "set",
+    "phone": "02-524-6418"
+  },
+  {
+    "title": "Regional Resource Center for Asia and the Pacific",
+    "department": "admin",
+    "phone": "02-516-2124"
+  },
+  {
+    "title": "Registry Office",
+    "department": "admin",
+    "phone": "02-524-5034"
+  },
+  {
+    "title": "School of Management (SOM)",
+    "department": "som",
+    "phone": "02-524-5657"
+  },
+  {
+    "title": "SOM-DBA (SOM-DBA)",
+    "department": "som",
+    "phone": "02-524-6183"
+  },
+  {
+    "title": "Structural Engineering Field of Study (SET-STE)",
+    "department": "set",
+    "phone": "02-524-6052"
+  },
+  {
+    "title": "Student Union Office",
+    "department": "admin",
+    "phone": "02-524-5979"
+  },
+  {
+    "title": "Taxi Service",
+    "department": "admin",
+    "phone": "02-524-6300"
+  },
+  {
+    "title": "Telecommunications Program (SET-TC)",
+    "department": "set",
+    "phone": "02-524-6054"
+  },
+  {
+    "title": "Transportation Engineering (SET-TE)",
+    "department": "set",
+    "phone": "02-524-5736"
+  },
+  {
+    "title": "Undergraduate Program (SERD-UG)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Undergraduate Program (SET-UG)",
+    "department": "set",
+    "phone": "02-524-5210"
+  },
+  {
+    "title": "Urban Environmental Management Program (SERD-UEM)",
+    "department": "serd",
+    "phone": "02-524-5606"
+  },
+  {
+    "title": "Urban Water Engineering Management (SERD-UWEM)",
+    "department": "serd",
+    "phone": "02-524-6070"
+  },
+  {
+    "title": "Water Engineering and Management Program (SET-WEM)",
+    "department": "set",
+    "phone": "02-524-6056"
+  }
+]

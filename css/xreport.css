@@ -1,0 +1,96 @@
+.report {
+    background-color: #757575;
+    color: #000;
+    overflow: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.report .page {
+    background-color: #FFF;
+    margin: 16px auto;
+    height: 9.5in;
+    width: 6.5in;
+    padding: 0.75in 1in;
+    overflow: hidden;
+    position: relative;
+    page-break-after: always;
+}
+
+.report .page-inner {
+    position: absolute;
+    width: 6.5in;
+    visibility: hidden;
+}
+
+.report .page-header, .report .page-footer {
+    left: 1in;
+    right: 1in;
+}
+
+.report .page-header {
+    border-bottom: 1px solid #000;
+    position: absolute;
+    padding-bottom: 5px;
+    padding-left: 2px;
+    top: 0.25in;
+}
+
+.report .page-date {
+    position: absolute;
+    padding-bottom: 5px;
+    padding-left: 2px;
+    right: 1in;
+    top: 0.25in;
+}
+
+.report .page-footer {
+    border-top: 1px solid #000;
+    position: absolute;
+    padding-top: 5px;
+    padding-left: 2px;
+    bottom: 0.25in;
+}
+
+.report .page-number {
+    position: absolute;
+    padding-top: 5px;
+    padding-right: 2px;
+    right: 1in;
+    bottom: 0.25in;
+}
+
+.report p {
+    margin: 0 !important;   /* use space (AddSpace()) not margin*/
+    padding: 0 !important;  /* use space (AddSpace()) not padding*/
+}
+
+.report table {
+    border-collapse: collapse;
+}
+
+
+@media print {
+    @page {
+        margin: 0;
+    }
+    
+    body {
+        margin: 0;
+        color: #000;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .report {
+        overflow: hidden;
+        position: inherit;
+    }
+
+    .report .page {
+        margin: 0;
+        page-break-before: always;
+    }
+}
