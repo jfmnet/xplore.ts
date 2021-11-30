@@ -143,7 +143,8 @@ var XCanvas2DModel = /** @class */ (function () {
                 break;
             case XCanvasActions.SELECT:
             case XCanvasActions.WINDOWZOOM:
-                this.SelectWindow(canvas, mouse);
+                if (canvas.settings.allowselect)
+                    this.SelectWindow(canvas, mouse);
                 break;
             case XCanvasActions.DRAW:
                 break;

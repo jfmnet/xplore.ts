@@ -73,10 +73,11 @@ interface XTableParamColumn {
 }
 
 interface XCalendarItem {
-    title: string;
+    text: string;
     details?: string;
     image?: string;
-    date: string;
+    start: string;
+    end: string;
     year: number;
     month: number;
     day: number;
@@ -89,8 +90,11 @@ enum XORIENTATION {
 }
 
 enum XPOSITION {
+    NONE = 0,
     TOP = 1,
-    BOTTOM = 2
+    BOTTOM = 2,
+    LEFT = 3,
+    RIGHT = 4
 }
 
 enum XINPUTTYPE {
@@ -135,6 +139,7 @@ class Xplore {
     onclick: Function;
 
     icon: string;
+    iconcolor: string;
     text: string;
 
     enabled: boolean = true;
@@ -188,8 +193,13 @@ class Xplore {
     Refresh(): void {
         this.object.innerHTML = "";
 
-        if (this.icon)
-            this.object.appendChild(this.DisplayIcon(this.icon));
+        if (this.icon) {
+            let icon = this.DisplayIcon(this.icon);
+            this.object.appendChild(icon);
+
+            if (this.iconcolor)
+                icon.style.color = this.iconcolor;
+        }
 
         if (this.text) {
             let text = document.createElement("div");
@@ -258,7 +268,8 @@ class Xplore {
             element.Dispose();
         });
 
-        this.object.remove();
+        if (this.object)
+            this.object.remove();
     }
 
     Resize(): void {
@@ -430,8 +441,11 @@ namespace Xplore {
     }
 
     export class ScrollContainer extends Xplore {
-        constructor() {
+        constructor(classes?: string[]) {
             super(undefined, "scroll-container");
+
+            if (classes)
+                this.classes = [...this.classes, ...classes];
         }
     }
 
@@ -662,6 +676,8 @@ namespace Xplore {
             super(param, "form");
             this.element = "form";
 
+            param = param || {};
+
             this.width = param.width || 400;
             this.height = param.height || 400;
         }
@@ -730,7 +746,7 @@ namespace Xplore {
 
             if (this.showclose) {
                 let button = new Xplore.Button({
-                    text: this.DisplayIcon("close"),
+                    icon: "close",
                     onclick: function () {
                         self.Close();
                     }
@@ -804,9 +820,13 @@ namespace Xplore {
             this.object.style.height = this.height + "px";
             this.object.style.left = left + "px";
             this.object.style.top = top + "px";
-
             this.object.style.zIndex = (++Xplore.zindex).toString();
         };
+
+        SetLocation(left: number, top: number): void {
+            this.object.style.left = left + "px";
+            this.object.style.top = top + "px";
+        }
 
         Events(): void {
             let self = this;
@@ -857,8 +877,12 @@ namespace Xplore {
         };
 
         Dispose(): void {
-            Xplore.zindex -= 2;
-            this.object.remove();
+            Xplore.zindex = 2;
+
+            if (this.object) {
+                this.object.remove();
+                delete this.object;
+            }
 
             for (let child of this.children)
                 child.Dispose();
@@ -1751,7 +1775,7 @@ namespace Xplore {
 
             for (let calendar of this.events) {
                 if (!calendar.year) {
-                    date = new Date(calendar.date);
+                    date = new Date(calendar.start);
                     calendar.year = date.getFullYear();
                     calendar.month = date.getMonth();
                     calendar.day = date.getDate();
@@ -1809,7 +1833,10 @@ namespace Xplore {
                 if (calendar.year === this.currentyear && calendar.month === this.currentmonth && calendar.day === day) {
                     if (!eventadded) {
                         eventadded = true;
-                        container.classes.push(calendar.type.toLowerCase());
+
+                        if (calendar.type)
+                            container.classes.push(calendar.type.toLowerCase());
+
                         container.Add(eventcontainer);
                     }
 
@@ -1900,7 +1927,7 @@ namespace Xplore {
         Refresh(): void {
             let left = new Xplore.Container({ classes: ["calendar-list-day"] });
 
-            let eventdate = new Date(this.event.date);
+            let eventdate = new Date(this.event.start);
             let year = eventdate.getFullYear();
             let month = eventdate.getMonth();
             let week = eventdate.getDay();
@@ -1921,8 +1948,10 @@ namespace Xplore {
             left.Show(this.object);
 
             let right = new Xplore.Container({ classes: ["calendar-list-details"] });
-            right.Add(new Xplore.Text({ text: this.event.title }));
-            right.Add(new Xplore.Text({ text: this.event.details }));
+            right.Add(new Xplore.Text({ text: this.event.text }));
+
+            if (this.event.details)
+                right.Add(new Xplore.Text({ text: this.event.details }));
 
             right.Show(this.object);
         }
@@ -2019,7 +2048,6 @@ namespace Xplore {
         RefreshFooter(): void {
         }
     }
-
 
     //Others
     export class Background extends Xplore {

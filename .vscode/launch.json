@@ -7,36 +7,8 @@
         {
             "type": "edge",
             "request": "launch",
-            "name": "ait",
-            "url": "http://localhost:5530/ait.html",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "edge",
-            "request": "launch",
             "name": "jfmatrix",
             "url": "http://localhost:5530",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "edge",
-            "request": "launch",
-            "name": "CSiBridge",
-            "url": "http://localhost:5530/bridge.html",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "edge",
-            "request": "launch",
-            "name": "ETABS Viewer",
-            "url": "http://localhost:5530/etabs.html",
-            "webRoot": "${workspaceFolder}"
-        },
-        {
-            "type": "edge",
-            "request": "launch",
-            "name": "Chart",
-            "url": "http://localhost:5530/chart.html",
             "webRoot": "${workspaceFolder}"
         }
     ]

@@ -298,6 +298,14 @@ class XBounds2D {
     x2: number;
     y2: number;
 
+    get midx(): number {
+        return (this.x1 + this.x2) / 2;
+    }
+
+    get midy(): number {
+        return (this.y1 + this.y2) / 2;
+    }
+
     constructor(x1?: number, y1?: number, x2?: number, y2?: number) {
         this.x1 = x1 || Number.POSITIVE_INFINITY;
         this.y1 = y1 || Number.POSITIVE_INFINITY;
@@ -318,6 +326,10 @@ class XBounds2D {
         if (this.y2 < y)
             this.y2 = y;
     }
+
+    IsInside(x: number, y: number) {
+        return ((x >= this.x1 && x <= this.x2) && (y >= this.y1 && y <= this.y2));
+    };
 }
 
 class XBounds3D extends XBounds2D {

@@ -38,11 +38,11 @@ var XCanvas2DSettings = /** @class */ (function () {
         this.usergrid = "#880";
         this.pointer = "#224";
         this.ischart = false;
-        this.DarkTheme();
+        this.LightTheme();
     }
     XCanvas2DSettings.prototype.LightTheme = function () {
         this.background = "#FFF";
-        this.axis = "#CCC";
+        this.axis = "#888";
         this.major = "#DDD";
         this.minor = "#EEE";
         this.ruler = "#FFF";
@@ -98,6 +98,9 @@ var XCanvas2D = /** @class */ (function (_super) {
         _this.gridx = [];
         _this.gridy = [];
         _this.drawgrid = 0;
+        //Custom Labels
+        _this.labelx = [];
+        _this.labely = [];
         //Toolbar
         _this.buttons = [];
         //Model
@@ -122,6 +125,8 @@ var XCanvas2D = /** @class */ (function (_super) {
             var self_1 = this;
             window.onresize = function () {
                 self_1.Resize();
+                if (self_1.settings.ischart)
+                    self_1.ZoomAll();
             };
         }
     };
@@ -201,12 +206,6 @@ var XCanvas2D = /** @class */ (function (_super) {
                 }
             }));
             toolbar_1.Add(new Xplore.Button({
-                icon: "magnify-scan",
-                onclick: function () {
-                    self_2.ZoomWindow();
-                }
-            }));
-            toolbar_1.Add(new Xplore.Button({
                 icon: "magnify-close",
                 onclick: function () {
                     self_2.ZoomAll();
@@ -234,6 +233,12 @@ var XCanvas2D = /** @class */ (function (_super) {
         //     this.DrawUserGrid();
     };
     XCanvas2D.prototype.DrawGrid = function () {
+        if (this.settings.ischart)
+            this.DrawChartGrid();
+        else
+            this.DrawNormalGrid();
+    };
+    XCanvas2D.prototype.DrawNormalGrid = function () {
         var root = Math.pow(10, Math.round(Math.log(this.gridsize * this.gridvalue.x) / Math.LN10)) / 100;
         var gridinterval = this.gridvalue.x / root;
         var x1 = this.ToCoordX(0);
@@ -290,17 +295,60 @@ var XCanvas2D = /** @class */ (function (_super) {
             y2 += majorinterval;
             this.PrimitiveLine(0, y2, this.width, y2);
         }
-        //Axis
-        x1 = axisx;
-        x2 = x1;
-        y1 = axisy;
-        y2 = y1;
-        this.SetProperties({
-            linecolor: this.settings.axis,
-            thickness: 1
-        });
-        this.PrimitiveLine(x1, 0, x1, this.height);
-        this.PrimitiveLine(0, y1, this.width, y1);
+    };
+    ;
+    XCanvas2D.prototype.DrawChartGrid = function () {
+        var root = Math.pow(10, Math.round(Math.log(this.gridsize) / Math.LN10)) / 100;
+        var intervalx = this.gridvalue.x / root;
+        var intervaly = this.gridvalue.y / root;
+        var intervalsize = this.ToCoordWidth(intervalx);
+        if (intervalsize <= 50) {
+            intervalx *= 5;
+            intervaly *= 5;
+        }
+        else if (intervalsize <= 75) {
+            intervalx *= 2;
+            intervaly *= 2;
+        }
+        if (this.settings.ischart) {
+            intervalx = 1;
+            intervaly = Math.round(intervaly);
+        }
+        var x1 = 0;
+        var y1 = 0;
+        var round = 0;
+        if (intervalx <= 10)
+            round = 2;
+        var x = this.rulersize;
+        var y = this.rulersize;
+        //X
+        var px = this.ToCoordX(0);
+        var labelpos = this.ToCoordY(0) + 10;
+        if (labelpos < 10)
+            labelpos = 10;
+        else if (labelpos > this.height - 10)
+            labelpos = this.height - 10;
+        if (!(this.labelx && this.labelx.length)) {
+            while (px >= 0) {
+                this.PrimitiveLine_2(px, labelpos, px, 0, this.settings.major, 1);
+                x1 -= intervalx;
+                px = this.ToCoordX(x1);
+            }
+        }
+        //Y
+        var py = this.ToCoordY(y1);
+        x = this.ToCoordX(0) - 10;
+        if (x < 10)
+            x = 10;
+        else if (x > this.width - 10)
+            x = this.width - 10;
+        if (!(this.labely && this.labely.length)) {
+            while (py > y) {
+                this.PrimitiveLine_2(x + 10, py, this.width, py, this.settings.major, 1);
+                y1 += intervaly;
+                py = this.ToCoordY(y1);
+            }
+        }
     };
     ;
     XCanvas2D.prototype.DrawUserGrid = function () {
@@ -401,43 +449,51 @@ var XCanvas2D = /** @class */ (function (_super) {
             font: font,
             color: fontcolor
         });
-        while (px1 >= 0 || px2 < this.width) {
-            if (this.gridvalue.x >= 1 && this.gridvalue.x <= 100) {
-                if (px1 >= x && px1 < this.width) {
-                    if (Math.abs(x1) >= 10000)
-                        this.PrimitiveText(x1.toExponential(1), px1, labelpos);
-                    else
-                        this.PrimitiveText(x1.toFixed(round), px1, labelpos);
-                    this.PrimitiveLine_2(px1, this.rulersize - 5, px1, this.rulersize, this.settings.rulerline, 2);
-                }
-                if (px2 < this.width && px2 >= x) {
-                    if (Math.abs(x2) >= 10000)
-                        this.PrimitiveText(x2.toExponential(1), px2, labelpos);
-                    else
-                        this.PrimitiveText(x2.toFixed(round), px2, labelpos);
-                    this.PrimitiveLine_2(px2, this.rulersize - 5, px2, this.rulersize, this.settings.rulerline, 2);
-                }
+        if (this.labelx.length) {
+            for (var i = 0; i < this.labelx.length; i++) {
+                this.PrimitiveText(this.labelx[i], i + 1, labelpos);
+                this.PrimitiveLine_2(i + 1, this.rulersize - 5, i + 1, this.rulersize, this.settings.rulerline, 2);
             }
-            else {
-                if (px1 >= x && px1 < this.width) {
-                    if (Math.abs(x1) >= 10000 || this.gridvalue.x <= 0.01)
-                        this.PrimitiveText(x1.toExponential(1), px1, labelpos);
-                    else
-                        this.PrimitiveText(x1.toFixed(round), px1, labelpos);
-                    this.PrimitiveLine_2(px1, this.rulersize - 5, px1, this.rulersize, this.settings.rulerline, 2);
+        }
+        else {
+            while (px1 >= 0 || px2 < this.width) {
+                if (this.gridvalue.x >= 1 && this.gridvalue.x <= 100) {
+                    if (px1 >= x && px1 < this.width) {
+                        if (Math.abs(x1) >= 10000)
+                            this.PrimitiveText(x1.toExponential(1), px1, labelpos);
+                        else
+                            this.PrimitiveText(x1.toFixed(round), px1, labelpos);
+                        this.PrimitiveLine_2(px1, this.rulersize - 5, px1, this.rulersize, this.settings.rulerline, 2);
+                    }
+                    if (px2 < this.width && px2 >= x) {
+                        if (Math.abs(x2) >= 10000)
+                            this.PrimitiveText(x2.toExponential(1), px2, labelpos);
+                        else
+                            this.PrimitiveText(x2.toFixed(round), px2, labelpos);
+                        this.PrimitiveLine_2(px2, this.rulersize - 5, px2, this.rulersize, this.settings.rulerline, 2);
+                    }
                 }
-                if (px2 < this.width && px2 >= x) {
-                    if (Math.abs(x2) >= 10000 || this.gridvalue.x <= 0.01)
-                        this.PrimitiveText(x2.toExponential(1), px2, labelpos);
-                    else
-                        this.PrimitiveText(x2.toFixed(round), px2, labelpos);
-                    this.PrimitiveLine_2(px2, this.rulersize - 5, px2, this.rulersize, this.settings.rulerline, 2);
+                else {
+                    if (px1 >= x && px1 < this.width) {
+                        if (Math.abs(x1) >= 10000 || this.gridvalue.x <= 0.01)
+                            this.PrimitiveText(x1.toExponential(1), px1, labelpos);
+                        else
+                            this.PrimitiveText(x1.toFixed(round), px1, labelpos);
+                        this.PrimitiveLine_2(px1, this.rulersize - 5, px1, this.rulersize, this.settings.rulerline, 2);
+                    }
+                    if (px2 < this.width && px2 >= x) {
+                        if (Math.abs(x2) >= 10000 || this.gridvalue.x <= 0.01)
+                            this.PrimitiveText(x2.toExponential(1), px2, labelpos);
+                        else
+                            this.PrimitiveText(x2.toFixed(round), px2, labelpos);
+                        this.PrimitiveLine_2(px2, this.rulersize - 5, px2, this.rulersize, this.settings.rulerline, 2);
+                    }
                 }
+                x1 -= intervalx;
+                x2 += intervalx;
+                px1 = this.ToCoordX(x1);
+                px2 = this.ToCoordX(x2);
             }
-            x1 -= intervalx;
-            x2 += intervalx;
-            px1 = this.ToCoordX(x1);
-            px2 = this.ToCoordX(x2);
         }
         //Major Y
         var py1 = this.ToCoordY(y1);
@@ -507,6 +563,10 @@ var XCanvas2D = /** @class */ (function (_super) {
             intervalx *= 2;
             intervaly *= 2;
         }
+        if (this.settings.ischart) {
+            intervalx = 1;
+            intervaly = Math.round(intervaly);
+        }
         var x2 = x1;
         var y2 = y1;
         var round = 0;
@@ -534,62 +594,77 @@ var XCanvas2D = /** @class */ (function (_super) {
         }
         x = 0;
         y = 0;
-        while (px1 >= 0 || px2 < this.width) {
-            if (this.gridvalue.x >= 1 && this.gridvalue.x <= 100) {
-                if (px1 >= x && px1 < this.width) {
-                    if (x1 !== 0) {
-                        if (Math.abs(x1) >= 100000)
-                            this.PrimitiveText_2(x1.toExponential(1), px1, labelpos, font, fontcolor, 0, "center", align);
-                        else
-                            this.PrimitiveText_2(x1.toFixed(round), px1, labelpos, font, fontcolor, 0, "center", align);
-                    }
-                    else
-                        this.PrimitiveText_2(x1.toFixed(round), px1 + 5, labelpos, font, fontcolor, 0, "left", align);
-                    this.PrimitiveLine_2(px1, labelpos - 10, px1, labelpos - 5, this.settings.axis, 2);
-                }
-                if (px2 < this.width && px2 >= x) {
-                    if (x2 !== 0) {
-                        if (Math.abs(x2) >= 100000)
-                            this.PrimitiveText_2(x2.toExponential(1), px2, labelpos, font, fontcolor, 0, "center", align);
-                        else
-                            this.PrimitiveText_2(x2.toFixed(round), px2, labelpos, font, fontcolor, 0, "center", align);
-                    }
-                    this.PrimitiveLine_2(px2, labelpos - 10, px2, labelpos - 5, this.settings.axis, 2);
-                }
+        this.SetTextProperties({
+            horizontalalignment: "center",
+            verticalalignment: "top",
+            font: font,
+            color: fontcolor
+        });
+        if (this.labelx && this.labelx.length) {
+            for (var i = 0; i < this.labelx.length; i++) {
+                x = this.ToCoordX(i + 1);
+                this.PrimitiveText(this.labelx[i], x, labelpos);
+                this.PrimitiveLine_2(x, labelpos - 10, x, labelpos - 5, this.settings.rulerline, 2);
             }
-            else {
-                if (px1 >= x && px1 < this.width) {
-                    if (x1 !== 0) {
-                        if (Math.abs(x1) >= 100000 || this.gridvalue.x <= 0.01)
-                            this.PrimitiveText_2(x1.toExponential(1), px1, labelpos, font, fontcolor, 0, "center", align);
+        }
+        else {
+            while (px1 >= 0 || px2 < this.width) {
+                if (this.gridvalue.x >= 1 && this.gridvalue.x <= 100) {
+                    if (px1 >= x && px1 < this.width) {
+                        if (x1 !== 0) {
+                            if (Math.abs(x1) >= 100000)
+                                this.PrimitiveText_2(x1.toExponential(1), px1, labelpos, font, fontcolor, 0, "center", align);
+                            else
+                                this.PrimitiveText_2(x1.toFixed(round), px1, labelpos, font, fontcolor, 0, "center", align);
+                        }
                         else
-                            this.PrimitiveText_2(x1.toFixed(round), px1, labelpos, font, fontcolor, 0, "center", align);
+                            this.PrimitiveText_2(x1.toFixed(round), px1 + 5, labelpos, font, fontcolor, 0, "left", align);
+                        this.PrimitiveLine_2(px1, labelpos - 10, px1, labelpos - 5, this.settings.axis, 2);
                     }
-                    else
-                        this.PrimitiveText_2(x1.toFixed(round), px1 + 5, labelpos, font, fontcolor, 0, "left", align);
-                    this.PrimitiveLine_2(px1, labelpos - 10, px1, labelpos - 5, this.settings.axis, 2);
+                    if (px2 < this.width && px2 >= x) {
+                        if (x2 !== 0) {
+                            if (Math.abs(x2) >= 100000)
+                                this.PrimitiveText_2(x2.toExponential(1), px2, labelpos, font, fontcolor, 0, "center", align);
+                            else
+                                this.PrimitiveText_2(x2.toFixed(round), px2, labelpos, font, fontcolor, 0, "center", align);
+                        }
+                        this.PrimitiveLine_2(px2, labelpos - 10, px2, labelpos - 5, this.settings.axis, 2);
+                    }
                 }
-                if (px2 < this.width && px2 >= x) {
-                    if (x2 !== 0) {
-                        if (Math.abs(x2) >= 100000 || this.gridvalue.x <= 0.01)
-                            this.PrimitiveText_2(x2.toExponential(1), px2, labelpos, font, fontcolor, 0, "center", align);
+                else {
+                    if (px1 >= x && px1 < this.width) {
+                        if (x1 !== 0) {
+                            if (Math.abs(x1) >= 100000 || this.gridvalue.x <= 0.01)
+                                this.PrimitiveText_2(x1.toExponential(1), px1, labelpos, font, fontcolor, 0, "center", align);
+                            else
+                                this.PrimitiveText_2(x1.toFixed(round), px1, labelpos, font, fontcolor, 0, "center", align);
+                        }
                         else
-                            this.PrimitiveText_2(x2.toFixed(round), px2, labelpos, font, fontcolor, 0, "center", align);
+                            this.PrimitiveText_2(x1.toFixed(round), px1 + 5, labelpos, font, fontcolor, 0, "left", align);
+                        this.PrimitiveLine_2(px1, labelpos - 10, px1, labelpos - 5, this.settings.axis, 2);
                     }
-                    this.PrimitiveLine_2(px2, labelpos - 10, px2, labelpos - 5, this.settings.axis, 2);
+                    if (px2 < this.width && px2 >= x) {
+                        if (x2 !== 0) {
+                            if (Math.abs(x2) >= 100000 || this.gridvalue.x <= 0.01)
+                                this.PrimitiveText_2(x2.toExponential(1), px2, labelpos, font, fontcolor, 0, "center", align);
+                            else
+                                this.PrimitiveText_2(x2.toFixed(round), px2, labelpos, font, fontcolor, 0, "center", align);
+                        }
+                        this.PrimitiveLine_2(px2, labelpos - 10, px2, labelpos - 5, this.settings.axis, 2);
+                    }
                 }
+                x1 -= intervalx;
+                x2 += intervalx;
+                px1 = this.ToCoordX(x1);
+                px2 = this.ToCoordX(x2);
             }
-            x1 -= intervalx;
-            x2 += intervalx;
-            px1 = this.ToCoordX(x1);
-            px2 = this.ToCoordX(x2);
         }
         //Y
         var py1 = this.ToCoordY(y1);
         var py2 = this.ToCoordY(y2);
-        var halign = "left";
+        var halign = "right";
         var angle = 0;
-        x = this.ToCoordX(0) + 10;
+        x = this.ToCoordX(0) - 10;
         if (x < 10) {
             halign = "center";
             x = 10;
@@ -606,52 +681,86 @@ var XCanvas2D = /** @class */ (function (_super) {
             this.PrimitiveLine_2(y, 0, y, this.height, this.settings.rulerline, 2);
         }
         y = 0;
-        while (py2 > y || py1 <= this.height) {
-            if (this.gridvalue.y >= 1 && this.gridvalue.y <= 100) {
-                if (py1 > y && py1 <= this.height) {
-                    if (y1 !== 0) {
-                        if (Math.abs(y1) >= 10000)
-                            this.PrimitiveText_2(y1.toExponential(1), x, py1, font, fontcolor, angle, halign, "middle");
-                        else
-                            this.PrimitiveText_2(y1.toFixed(round), x, py1, font, fontcolor, angle, halign, "middle");
-                    }
-                    this.PrimitiveLine_2(x - 10, py1, x - 5, py1, this.settings.axis, 2);
-                }
-                if (py2 <= this.height && py2 > y) {
-                    if (y2 !== 0) {
-                        if (Math.abs(y2) >= 100000)
-                            this.PrimitiveText_2(y2.toExponential(1), x, py2, font, fontcolor, angle, halign, "middle");
-                        else
-                            this.PrimitiveText_2(y2.toFixed(round), x, py2, font, fontcolor, angle, halign, "middle");
-                    }
-                    this.PrimitiveLine_2(x - 10, py2, x - 5, py2, this.settings.axis, 2);
-                }
+        if (this.labely && this.labely.length) {
+            labelpos = x;
+            for (var i = 0; i < this.labely.length; i++) {
+                x = this.ToCoordY(i + 1);
+                this.PrimitiveText_2(this.labely[i], labelpos, x, font, fontcolor, angle, halign, "middle");
+                this.PrimitiveLine_2(labelpos + 10, x, labelpos + 5, x, this.settings.rulerline, 2);
             }
-            else {
-                if (py1 > y && py1 <= this.height) {
-                    if (y1 !== 0) {
-                        if (Math.abs(y1) >= 100000 || this.gridvalue.x <= 0.01)
-                            this.PrimitiveText_2(y1.toExponential(1), x, py1, font, fontcolor, angle, halign, "middle");
-                        else
-                            this.PrimitiveText_2(y1.toFixed(round), x, py1, font, fontcolor, angle, halign, "middle");
-                    }
-                    this.PrimitiveLine_2(x - 10, py1, x - 5, py1, this.settings.axis, 2);
-                }
-                if (py2 <= this.height && py2 > y) {
-                    if (y2 !== 0) {
-                        if (Math.abs(y1) >= 100000 || this.gridvalue.x <= 0.01)
-                            this.PrimitiveText_2(y2.toExponential(1), x, py2, font, fontcolor, angle, halign, "bottom");
-                        else
-                            this.PrimitiveText_2(y2.toFixed(round), x, py2, font, fontcolor, angle, halign, "bottom");
-                    }
-                    this.PrimitiveLine_2(x - 10, py2, x - 5, py2, this.settings.axis, 2);
-                }
-            }
-            y1 -= intervaly;
-            y2 += intervaly;
-            py1 = this.ToCoordY(y1);
-            py2 = this.ToCoordY(y2);
         }
+        else {
+            while (py2 > y || py1 <= this.height) {
+                if (this.gridvalue.y >= 1 && this.gridvalue.y <= 100) {
+                    if (py1 > y && py1 <= this.height) {
+                        if (y1 !== 0) {
+                            if (Math.abs(y1) >= 10000)
+                                this.PrimitiveText_2(y1.toExponential(1), x, py1, font, fontcolor, angle, halign, "middle");
+                            else
+                                this.PrimitiveText_2(y1.toFixed(round), x, py1, font, fontcolor, angle, halign, "middle");
+                        }
+                        this.PrimitiveLine_2(x + 10, py1, x + 5, py1, this.settings.axis, 2);
+                    }
+                    if (py2 <= this.height && py2 > y) {
+                        if (y2 !== 0) {
+                            if (Math.abs(y2) >= 100000)
+                                this.PrimitiveText_2(y2.toExponential(1), x, py2, font, fontcolor, angle, halign, "middle");
+                            else
+                                this.PrimitiveText_2(y2.toFixed(round), x, py2, font, fontcolor, angle, halign, "middle");
+                        }
+                        this.PrimitiveLine_2(x + 10, py2, x + 5, py2, this.settings.axis, 2);
+                    }
+                }
+                else {
+                    if (py1 > y && py1 <= this.height) {
+                        if (y1 !== 0) {
+                            if (Math.abs(y1) >= 100000 || this.gridvalue.x <= 0.01)
+                                this.PrimitiveText_2(y1.toExponential(1), x, py1, font, fontcolor, angle, halign, "middle");
+                            else
+                                this.PrimitiveText_2(y1.toFixed(round), x, py1, font, fontcolor, angle, halign, "middle");
+                        }
+                        this.PrimitiveLine_2(x - 10, py1, x - 5, py1, this.settings.axis, 2);
+                    }
+                    if (py2 <= this.height && py2 > y) {
+                        if (y2 !== 0) {
+                            if (Math.abs(y1) >= 100000 || this.gridvalue.x <= 0.01)
+                                this.PrimitiveText_2(y2.toExponential(1), x, py2, font, fontcolor, angle, halign, "bottom");
+                            else
+                                this.PrimitiveText_2(y2.toFixed(round), x, py2, font, fontcolor, angle, halign, "bottom");
+                        }
+                        this.PrimitiveLine_2(x - 10, py2, x - 5, py2, this.settings.axis, 2);
+                    }
+                }
+                y1 -= intervaly;
+                y2 += intervaly;
+                py1 = this.ToCoordY(y1);
+                py2 = this.ToCoordY(y2);
+            }
+        }
+        //Axis
+        x1 = this.ToCoordX(0);
+        y1 = this.ToCoordY(0);
+        this.SetProperties({
+            linecolor: this.settings.axis,
+            thickness: 2
+        });
+        this.PrimitiveLine(x1, 0, x1, y1);
+        this.PrimitiveLine(x1, y1, this.width, y1);
+        //Labels
+        font = "bold 18px sans-serif";
+        this.SetTextProperties({
+            horizontalalignment: "center",
+            verticalalignment: "top",
+            font: font,
+            color: fontcolor
+        });
+        if (this.textx)
+            this.PrimitiveText(this.textx, this.width / 2, this.height - this.rulersize / 2, 0);
+        this.SetTextProperties({
+            verticalalignment: "bottom",
+        });
+        if (this.texty)
+            this.PrimitiveText(this.texty, this.rulersize / 2, this.height / 2, -Math.PI / 2);
     };
     ;
     //Properties
@@ -742,6 +851,17 @@ var XCanvas2D = /** @class */ (function (_super) {
             this.context.lineWidth = linewidth;
             this.context.strokeRect(x, y, w, h);
         }
+    };
+    ;
+    XCanvas2D.prototype.PrimitiveCircle = function (x, y, r, showfill, showline) {
+        var context = this.context;
+        context.beginPath();
+        context.arc(x, y, r, 0, Math.PI * 2, false);
+        context.closePath();
+        if (showfill)
+            context.fill();
+        if (showline)
+            context.stroke();
     };
     ;
     XCanvas2D.prototype.PrimitivePolygon = function (points, showfill, showline) {
@@ -868,7 +988,20 @@ var XCanvas2D = /** @class */ (function (_super) {
                 context.stroke();
         }
     };
-    XCanvas2D.prototype.DrawCircle = function (x, y, r, properties, fixedsize) {
+    XCanvas2D.prototype.DrawCircle = function (x, y, r, showfill, showline) {
+        x = this.ToCoordX(x);
+        y = this.ToCoordY(y);
+        var context = this.context;
+        context.beginPath();
+        context.arc(x, y, r, 0, Math.PI * 2, false);
+        context.closePath();
+        if (showfill)
+            context.fill();
+        if (showline)
+            context.stroke();
+    };
+    ;
+    XCanvas2D.prototype.DrawCircle_2 = function (x, y, r, properties, fixedsize) {
         if (fixedsize === void 0) { fixedsize = false; }
         if (!fixedsize)
             r = this.gridsize * r / this.gridvalue.x;
@@ -885,6 +1018,50 @@ var XCanvas2D = /** @class */ (function (_super) {
             context.stroke();
     };
     ;
+    XCanvas2D.prototype.DrawPie_2 = function (x, y, r, startangle, endangle, properties) {
+        x = this.ToCoordX(x);
+        y = this.ToCoordY(y);
+        r = this.ToCoordWidth(r);
+        var context = this.context;
+        this.SetProperties(properties);
+        context.beginPath();
+        context.moveTo(x, y);
+        context.arc(x, y, r, startangle, endangle, false);
+        context.moveTo(x, y);
+        if (properties.showfill)
+            context.fill();
+        if (properties.showline)
+            context.stroke();
+    };
+    ;
+    XCanvas2D.prototype.DrawText = function (text, x, y, a, font, color, ha, va) {
+        if (a === void 0) { a = 0; }
+        x = this.ToCoordX(x);
+        y = this.ToCoordY(y);
+        if (ha !== undefined)
+            this.context.textAlign = ha;
+        else
+            this.context.textAlign = 'center';
+        if (va !== undefined)
+            this.context.textBaseline = va;
+        else
+            this.context.textBaseline = "bottom";
+        if (a === 0) {
+            this.context.fillStyle = color;
+            this.context.font = font;
+            this.context.fillText(text, x, y);
+        }
+        else {
+            this.context.save();
+            if (color)
+                this.context.fillStyle = color;
+            this.context.font = font;
+            this.context.translate(x, y);
+            this.context.rotate(a);
+            this.context.fillText(text, 0, 0);
+            this.context.restore();
+        }
+    };
     XCanvas2D.prototype.SelectRectangle = function (x, y, w, h, linecolor) {
         this.context.save();
         this.context.strokeStyle = linecolor;
@@ -925,9 +1102,10 @@ var XCanvas2D = /** @class */ (function (_super) {
         this.model.Draw(draw);
     };
     //Zoom
-    XCanvas2D.prototype.ZoomAll = function () {
+    XCanvas2D.prototype.ZoomAll = function (uniformscale) {
+        if (uniformscale === void 0) { uniformscale = false; }
         if (this.settings.ischart)
-            this.ZoomChart();
+            this.ZoomChart(uniformscale);
         else
             this.ZoomNormal();
     };
@@ -987,12 +1165,13 @@ var XCanvas2D = /** @class */ (function (_super) {
             this.gridsize = 20;
             this.Render();
         }
+        this.zoomvalue = this.gridsize / (this.defaultgridsize * this.gridvalue.x);
         this.StoreBuffer();
     };
-    XCanvas2D.prototype.ZoomChart = function () {
+    XCanvas2D.prototype.ZoomChart = function (uniformscale) {
+        if (uniformscale === void 0) { uniformscale = false; }
         //Compute bounds
         var bounds = this.model.Bounds();
-        var uniformscale = false;
         this.Resize();
         //Check if width and height is already available
         if (bounds && this.width && this.height && bounds.x1 < 1000000000) {
@@ -1001,29 +1180,29 @@ var XCanvas2D = /** @class */ (function (_super) {
             var y1 = bounds.y1;
             var x2 = bounds.x2;
             var y2 = bounds.y2;
-            var factor = 1.1;
             var mid = new XPoint2D((x1 + x2) / 2, (y1 + y2) / 2);
             if (uniformscale) {
-                var max = Math.max((x2 - x1) * this.gridsize / this.width * factor, (y2 - y1) * this.gridsize / this.height * factor);
+                var max = Math.max((x2 - x1) * this.gridsize / this.width, (y2 - y1) * this.gridsize / this.height);
                 this.gridvalue.x = max;
                 this.gridvalue.y = max;
             }
             else {
-                this.gridvalue.x = (x2 - x1) * this.gridsize / this.width * factor;
-                this.gridvalue.y = (y2 - y1) * this.gridsize / this.height * factor;
+                this.gridvalue.x = (x2 - x1) * this.gridsize / (this.width - this.rulersize * 1.5);
+                this.gridvalue.y = (y2 - y1) * this.gridsize / (this.height - this.rulersize * 1.5);
             }
             if (this.gridvalue.x === 0)
                 this.gridvalue.x = 1;
             if (this.gridvalue.y === 0)
                 this.gridvalue.y = 1;
             if (this.settings.showruler) {
-                this.middle.x = mid.x / this.gridvalue.x;
-                this.middle.y = mid.y / this.gridvalue.y;
+                this.middle.x = mid.x / this.gridvalue.x - this.rulersize / (3 * this.gridsize);
+                this.middle.y = mid.y / this.gridvalue.y - this.rulersize / (3 * this.gridsize);
             }
             else {
                 this.middle.x = mid.x / this.gridvalue.x;
                 this.middle.y = mid.y / this.gridvalue.y;
             }
+            this.zoomvalue = this.gridsize / (this.defaultgridsize * this.gridvalue.x);
             this.Render();
         }
     };
@@ -1033,12 +1212,14 @@ var XCanvas2D = /** @class */ (function (_super) {
         this.ZoomRealtime(d);
         var curr = new XPoint2D(this.ToPointX(x), this.ToPointY(y));
         this.MoveByPoint(curr, prev);
+        this.zoomvalue = this.gridsize / (this.defaultgridsize * this.gridvalue.x);
         this.Render();
     };
     XCanvas2D.prototype.ZoomIn = function () {
         this.gridsize *= 1.15;
         if (this.gridvalue.x <= 1 && this.gridsize > 200)
             this.gridsize = 200;
+        this.zoomvalue = this.gridsize / (this.defaultgridsize * this.gridvalue.x);
         this.Render();
         this.StoreBuffer();
     };
@@ -1046,6 +1227,7 @@ var XCanvas2D = /** @class */ (function (_super) {
         this.gridsize /= 1.15;
         if (this.gridvalue.x <= 1 && this.gridsize > 200)
             this.gridsize = 200;
+        this.zoomvalue = this.gridsize / (this.defaultgridsize * this.gridvalue.x);
         this.Render();
         this.StoreBuffer();
     };
@@ -1064,8 +1246,7 @@ var XCanvas2D = /** @class */ (function (_super) {
             this.gridvalue.x *= 10;
             this.gridvalue.y *= 10;
         }
-    };
-    XCanvas2D.prototype.ZoomWindow = function () {
+        this.zoomvalue = this.gridsize / (this.defaultgridsize * this.gridvalue.x);
     };
     XCanvas2D.prototype.MoveByPoint = function (current, previous) {
         if (!(current.x === previous.x && current.y === previous.y)) {
@@ -1163,17 +1344,19 @@ var XCanvas2D = /** @class */ (function (_super) {
             var y = event.pageY - self.top;
             self.MouseUp(x, y, movebutton);
         });
-        this.canvas.addEventListener('wheel', function (event) {
-            event.preventDefault();
-            if (onenter) {
-                var delta = event.detail ? -event.detail / 4 : event.deltaY / 240;
-                if (event.deltaY)
-                    delta = event.deltaY / 240;
-                var x = event.pageX - self.left;
-                var y = event.pageY - self.top;
-                self.MouseWheel(x, y, -delta);
-            }
-        });
+        if (!this.settings.ischart) {
+            this.canvas.addEventListener('wheel', function (event) {
+                event.preventDefault();
+                if (onenter) {
+                    var delta = event.detail ? -event.detail / 4 : event.deltaY / 240;
+                    if (event.deltaY)
+                        delta = event.deltaY / 240;
+                    var x = event.pageX - self.left;
+                    var y = event.pageY - self.top;
+                    self.MouseWheel(x, y, -delta);
+                }
+            });
+        }
     };
     XCanvas2D.prototype.DoubleClick = function (x, y, button) {
         //On ruler

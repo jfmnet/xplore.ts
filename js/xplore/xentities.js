@@ -288,6 +288,20 @@ var XBounds2D = /** @class */ (function () {
         this.x2 = x2 || Number.NEGATIVE_INFINITY;
         this.y2 = y2 || Number.NEGATIVE_INFINITY;
     }
+    Object.defineProperty(XBounds2D.prototype, "midx", {
+        get: function () {
+            return (this.x1 + this.x2) / 2;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(XBounds2D.prototype, "midy", {
+        get: function () {
+            return (this.y1 + this.y2) / 2;
+        },
+        enumerable: false,
+        configurable: true
+    });
     XBounds2D.prototype.Update = function (x, y) {
         if (this.x1 > x)
             this.x1 = x;
@@ -298,6 +312,10 @@ var XBounds2D = /** @class */ (function () {
         if (this.y2 < y)
             this.y2 = y;
     };
+    XBounds2D.prototype.IsInside = function (x, y) {
+        return ((x >= this.x1 && x <= this.x2) && (y >= this.y1 && y <= this.y2));
+    };
+    ;
     return XBounds2D;
 }());
 var XBounds3D = /** @class */ (function (_super) {

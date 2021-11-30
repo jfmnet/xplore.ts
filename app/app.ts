@@ -1,4 +1,4 @@
 function Run() {
-    let view = new MainViewJFM();
+    let view = new MainView();
     view.Show();
 }

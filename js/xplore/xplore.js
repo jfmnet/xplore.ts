@@ -29,8 +29,11 @@ var XORIENTATION;
 })(XORIENTATION || (XORIENTATION = {}));
 var XPOSITION;
 (function (XPOSITION) {
+    XPOSITION[XPOSITION["NONE"] = 0] = "NONE";
     XPOSITION[XPOSITION["TOP"] = 1] = "TOP";
     XPOSITION[XPOSITION["BOTTOM"] = 2] = "BOTTOM";
+    XPOSITION[XPOSITION["LEFT"] = 3] = "LEFT";
+    XPOSITION[XPOSITION["RIGHT"] = 4] = "RIGHT";
 })(XPOSITION || (XPOSITION = {}));
 var XINPUTTYPE;
 (function (XINPUTTYPE) {
@@ -104,8 +107,12 @@ var Xplore = /** @class */ (function () {
     };
     Xplore.prototype.Refresh = function () {
         this.object.innerHTML = "";
-        if (this.icon)
-            this.object.appendChild(this.DisplayIcon(this.icon));
+        if (this.icon) {
+            var icon = this.DisplayIcon(this.icon);
+            this.object.appendChild(icon);
+            if (this.iconcolor)
+                icon.style.color = this.iconcolor;
+        }
         if (this.text) {
             var text = document.createElement("div");
             text.classList.add("text");
@@ -163,7 +170,8 @@ var Xplore = /** @class */ (function () {
         this.children.forEach(function (element) {
             element.Dispose();
         });
-        this.object.remove();
+        if (this.object)
+            this.object.remove();
     };
     Xplore.prototype.Resize = function () {
     };
@@ -314,8 +322,11 @@ var Xplore = /** @class */ (function () {
     Xplore.Container = Container;
     var ScrollContainer = /** @class */ (function (_super) {
         __extends(ScrollContainer, _super);
-        function ScrollContainer() {
-            return _super.call(this, undefined, "scroll-container") || this;
+        function ScrollContainer(classes) {
+            var _this = _super.call(this, undefined, "scroll-container") || this;
+            if (classes)
+                _this.classes = __spreadArray(__spreadArray([], _this.classes, true), classes, true);
+            return _this;
         }
         return ScrollContainer;
     }(Xplore));
@@ -503,6 +514,7 @@ var Xplore = /** @class */ (function () {
             _this.oktext = "OK";
             _this.canceltext = "Cancel";
             _this.element = "form";
+            param = param || {};
             _this.width = param.width || 400;
             _this.height = param.height || 400;
             return _this;
@@ -559,7 +571,7 @@ var Xplore = /** @class */ (function () {
             }
             if (this.showclose) {
                 var button = new Xplore.Button({
-                    text: this.DisplayIcon("close"),
+                    icon: "close",
                     onclick: function () {
                         self.Close();
                     }
@@ -622,6 +634,10 @@ var Xplore = /** @class */ (function () {
             this.object.style.zIndex = (++Xplore.zindex).toString();
         };
         ;
+        Form.prototype.SetLocation = function (left, top) {
+            this.object.style.left = left + "px";
+            this.object.style.top = top + "px";
+        };
         Form.prototype.Events = function () {
             var self = this;
             var resizing;
@@ -666,8 +682,11 @@ var Xplore = /** @class */ (function () {
         };
         ;
         Form.prototype.Dispose = function () {
-            Xplore.zindex -= 2;
-            this.object.remove();
+            Xplore.zindex = 2;
+            if (this.object) {
+                this.object.remove();
+                delete this.object;
+            }
             for (var _i = 0, _a = this.children; _i < _a.length; _i++) {
                 var child = _a[_i];
                 child.Dispose();
@@ -1426,7 +1445,7 @@ var Xplore = /** @class */ (function () {
             for (var _i = 0, _a = this.events; _i < _a.length; _i++) {
                 var calendar = _a[_i];
                 if (!calendar.year) {
-                    date = new Date(calendar.date);
+                    date = new Date(calendar.start);
                     calendar.year = date.getFullYear();
                     calendar.month = date.getMonth();
                     calendar.day = date.getDate();
@@ -1471,7 +1490,8 @@ var Xplore = /** @class */ (function () {
                 if (calendar.year === this.currentyear && calendar.month === this.currentmonth && calendar.day === day) {
                     if (!eventadded) {
                         eventadded = true;
-                        container.classes.push(calendar.type.toLowerCase());
+                        if (calendar.type)
+                            container.classes.push(calendar.type.toLowerCase());
                         container.Add(eventcontainer);
                     }
                     eventcontainer.Add(new Xplore.List({ icon: "circle" }));
@@ -1541,7 +1561,7 @@ var Xplore = /** @class */ (function () {
         }
         CalendarList.prototype.Refresh = function () {
             var left = new Xplore.Container({ classes: ["calendar-list-day"] });
-            var eventdate = new Date(this.event.date);
+            var eventdate = new Date(this.event.start);
             var year = eventdate.getFullYear();
             var month = eventdate.getMonth();
             var week = eventdate.getDay();
@@ -1557,8 +1577,9 @@ var Xplore = /** @class */ (function () {
             left.Add(new Xplore.Text({ text: date }));
             left.Show(this.object);
             var right = new Xplore.Container({ classes: ["calendar-list-details"] });
-            right.Add(new Xplore.Text({ text: this.event.title }));
-            right.Add(new Xplore.Text({ text: this.event.details }));
+            right.Add(new Xplore.Text({ text: this.event.text }));
+            if (this.event.details)
+                right.Add(new Xplore.Text({ text: this.event.details }));
             right.Show(this.object);
         };
         CalendarList.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

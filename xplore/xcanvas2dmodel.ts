@@ -175,7 +175,8 @@ class XCanvas2DModel {
 
             case XCanvasActions.SELECT:
             case XCanvasActions.WINDOWZOOM:
-                this.SelectWindow(canvas, mouse);
+                if (canvas.settings.allowselect)
+                    this.SelectWindow(canvas, mouse);
 
                 break;
 

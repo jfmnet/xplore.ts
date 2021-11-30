@@ -1,5 +1,5 @@
 function Run() {
-    var view = new MainViewJFM();
+    var view = new MainView();
     view.Show();
 }
 //# sourceMappingURL=app.js.map

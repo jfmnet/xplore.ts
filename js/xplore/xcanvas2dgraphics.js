@@ -39,9 +39,11 @@ var XTextProperties = /** @class */ (function () {
 ;
 var XCanvas2DGraphics = /** @class */ (function () {
     function XCanvas2DGraphics() {
+        this.points = [];
         this.properties = new XDrawProperties();
         this.selectedproperties = new XDrawProperties();
         this.hoverproperties = new XDrawProperties();
+        this.textproperties = new XTextProperties();
         this.selected = false;
         this.mouseover = false;
         this.mousedown = 1;
@@ -233,7 +235,7 @@ var XCanvas2DGraphics = /** @class */ (function () {
         }
         //Getter and setter
         Circle.prototype.Render = function (canvas) {
-            canvas.DrawCircle(this.x, this.y, this.r, this.Property(), this.fixedsize);
+            canvas.DrawCircle_2(this.x, this.y, this.r, this.Property(), this.fixedsize);
         };
         Circle.prototype.SelectByPoint = function (canvas, mouse) {
             return new XPolygon2D(this.points).IsInside(mouse.down.x, mouse.down.y);
@@ -241,5 +243,76 @@ var XCanvas2DGraphics = /** @class */ (function () {
         return Circle;
     }(XCanvas2DGraphics));
     XCanvas2DGraphics.Circle = Circle;
+    var Pie = /** @class */ (function (_super) {
+        __extends(Pie, _super);
+        function Pie(x, y, r, startangle, endangle) {
+            var _this = _super.call(this) || this;
+            _this.x = x;
+            _this.y = y;
+            _this.r = r;
+            _this.startangle = startangle;
+            _this.endangle = endangle;
+            return _this;
+        }
+        //Getter and setter
+        Pie.prototype.Render = function (canvas) {
+            canvas.DrawPie_2(this.x, this.y, this.r, this.startangle, this.endangle, this.Property());
+        };
+        Pie.prototype.SelectByPoint = function (canvas, mouse) {
+            return new XPolygon2D(this.points).IsInside(mouse.down.x, mouse.down.y);
+        };
+        Pie.prototype.UpdateBounds = function (bounds) {
+            bounds.Update(this.x + this.r, this.y);
+            bounds.Update(this.x - this.r, this.y);
+            bounds.Update(this.x, this.y + this.r);
+            bounds.Update(this.x, this.y - this.r);
+        };
+        return Pie;
+    }(XCanvas2DGraphics));
+    XCanvas2DGraphics.Pie = Pie;
+    var Polygon = /** @class */ (function (_super) {
+        __extends(Polygon, _super);
+        function Polygon(points) {
+            var _this = _super.call(this) || this;
+            _this.points = points;
+            return _this;
+        }
+        //Render
+        Polygon.prototype.Render = function (canvas) {
+            canvas.DrawPolygon_2(this.points, this.Property());
+        };
+        Polygon.prototype.SelectByPoint = function (canvas, mouse) {
+            return new XPolygon2D(this.points).IsInside(mouse.down.x, mouse.down.y);
+        };
+        Polygon.prototype.MouseHover = function (mouse) {
+            this.mouseover = new XPolygon2D(this.points).IsInside(mouse.current.x, mouse.current.y);
+            if (this.mouseover && this.onhover)
+                this.onhover(this);
+        };
+        return Polygon;
+    }(XCanvas2DGraphics));
+    XCanvas2DGraphics.Polygon = Polygon;
+    var Text = /** @class */ (function (_super) {
+        __extends(Text, _super);
+        function Text(text, x, y) {
+            var _this = _super.call(this) || this;
+            _this.a = 0;
+            _this.scale = true;
+            _this.x = x;
+            _this.y = y;
+            _this.text = text;
+            return _this;
+        }
+        Text.prototype.Render = function (canvas) {
+            var font;
+            if (this.scale)
+                font = this.textproperties.size * canvas.zoomvalue + "px " + this.textproperties.font;
+            else
+                font = this.textproperties.size + "px " + this.textproperties.font;
+            canvas.DrawText(this.text, this.x, this.y, this.a, font, this.textproperties.color, this.textproperties.horizontalalignment, this.textproperties.verticalalignment);
+        };
+        return Text;
+    }(XCanvas2DGraphics));
+    XCanvas2DGraphics.Text = Text;
 })(XCanvas2DGraphics || (XCanvas2DGraphics = {}));
 //# sourceMappingURL=xcanvas2dgraphics.js.map
