@@ -2027,20 +2027,28 @@ namespace Xplore {
         RefreshBody(): void {
             let tr: HTMLTableRowElement;
             let td: HTMLTableCellElement;
+            let index: number;
 
-            for (let cell of this.data) {
+            for (let row of this.data) {
                 tr = document.createElement("tr");
                 this.body.appendChild(tr);
+
+                index = 0;
 
                 for (let column of this.columns) {
                     td = document.createElement("td");
 
-                    if (cell[column.name] instanceof Xplore) {
-                        cell[column.name].Show(td);
+                    if (row[column.name] instanceof Xplore) {
+                        row[column.name].Show(td);
+                    } else if (column.name) {
+                        td.innerHTML = row[column.name];
                     } else {
-                        td.innerHTML = cell[column.name];
+                        td.innerHTML = row[index];
                     }
+
                     tr.appendChild(td);
+
+                    index++;
                 }
             }
         }

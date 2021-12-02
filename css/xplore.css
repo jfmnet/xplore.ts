@@ -16,7 +16,7 @@
 
 body {
     font: 13px normal, -apple-system, BlinkMacSystemFont, "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    background-color: var(--C900);
+    background-color: var(--C50);
     color: var(--C50);
     margin: 0;
     padding: 0;
@@ -26,15 +26,14 @@ body {
 }
 
 ::-webkit-scrollbar {
-    background-color: var(--C800);
-    box-shadow: inset 0 0 6px var(--C900);
+    background-color: var(--C300);
+    box-shadow: inset 0 0 6px var(--C400);
     height: 16px;
     width: 16px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--C700);
-    border-radius: 8px;
+    background-color: var(--C500);
 }
 
 i.mdi {

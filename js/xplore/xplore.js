@@ -1634,20 +1634,26 @@ var Xplore = /** @class */ (function () {
         Table.prototype.RefreshBody = function () {
             var tr;
             var td;
+            var index;
             for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
-                var cell = _a[_i];
+                var row = _a[_i];
                 tr = document.createElement("tr");
                 this.body.appendChild(tr);
+                index = 0;
                 for (var _b = 0, _c = this.columns; _b < _c.length; _b++) {
                     var column = _c[_b];
                     td = document.createElement("td");
-                    if (cell[column.name] instanceof Xplore) {
-                        cell[column.name].Show(td);
+                    if (row[column.name] instanceof Xplore) {
+                        row[column.name].Show(td);
+                    }
+                    else if (column.name) {
+                        td.innerHTML = row[column.name];
                     }
                     else {
-                        td.innerHTML = cell[column.name];
+                        td.innerHTML = row[index];
                     }
                     tr.appendChild(td);
+                    index++;
                 }
             }
         };
