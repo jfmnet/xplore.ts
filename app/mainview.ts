@@ -44,16 +44,16 @@ class MainView {
 
         splitter.Set(this.canvas2D, 0);
 
-        this.canvas3D = new XCanvas3D();
-        this.canvas3D.settings.backcolor = 0x000000;
-        this.canvas3D.settings.showtoolbar = true;
-        splitter.Set(this.canvas3D, 1);
+        // this.canvas3D = new XCanvas3D();
+        // this.canvas3D.settings.backcolor = 0x000000;
+        // this.canvas3D.settings.showtoolbar = true;
+        // splitter.Set(this.canvas3D, 1);
 
-        let object = new THREE.Object3D;
-        let axis = new XCanvas3DGraphics.Axis();
+        // let object = new THREE.Object3D;
+        // let axis = new XCanvas3DGraphics.Axis();
 
-        object.add(axis.Generate());
-        this.canvas3D.SetObjects(object);
+        // object.add(axis.Generate());
+        // this.canvas3D.SetObjects(object);
     }
 
     ShowMenu(splitter: Xplore.SplitContainer): void {

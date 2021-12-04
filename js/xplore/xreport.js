@@ -90,7 +90,7 @@ var XReport = /** @class */ (function (_super) {
             this.page.forEach(function (item) {
                 item.style.marginBottom = (value - 1) * pheight_1 + 16 + "px";
                 item.style.marginTop = (value - 1) * pheight_1 / 2 + "px";
-                item.style.transform = "scale(" + value + ")";
+                item.style.transform = "scale(".concat(value, ")");
             });
             this.page[0].style.marginTop = (value - 1) * pheight_1 / 2 + 16 + "px";
         }

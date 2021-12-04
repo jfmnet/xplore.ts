@@ -33,14 +33,14 @@ var MainView = /** @class */ (function () {
         this.canvas2D = new XCanvas2D();
         this.canvas2D.model = new StructureModel();
         splitter.Set(this.canvas2D, 0);
-        this.canvas3D = new XCanvas3D();
-        this.canvas3D.settings.backcolor = 0x000000;
-        this.canvas3D.settings.showtoolbar = true;
-        splitter.Set(this.canvas3D, 1);
-        var object = new THREE.Object3D;
-        var axis = new XCanvas3DGraphics.Axis();
-        object.add(axis.Generate());
-        this.canvas3D.SetObjects(object);
+        // this.canvas3D = new XCanvas3D();
+        // this.canvas3D.settings.backcolor = 0x000000;
+        // this.canvas3D.settings.showtoolbar = true;
+        // splitter.Set(this.canvas3D, 1);
+        // let object = new THREE.Object3D;
+        // let axis = new XCanvas3DGraphics.Axis();
+        // object.add(axis.Generate());
+        // this.canvas3D.SetObjects(object);
     };
     MainView.prototype.ShowMenu = function (splitter) {
         var menu = new Xplore.MenuContainer();
