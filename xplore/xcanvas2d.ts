@@ -298,9 +298,6 @@ class XCanvas2D extends Xplore {
 
         if (this.settings.showruler)
             this.DrawRuler();
-
-        // if (this.settings.showusergrid)
-        //     this.DrawUserGrid();
     }
 
     DrawGrid(): void {
@@ -704,6 +701,10 @@ class XCanvas2D extends Xplore {
         else if (intervalsize <= 75) {
             intervalx *= 2;
             intervaly *= 2;
+
+        } else if (intervalsize > 150) {
+            intervalx /= 2;
+            intervaly /= 2;
         }
 
         if (this.settings.ischart) {
@@ -751,12 +752,6 @@ class XCanvas2D extends Xplore {
         this.SetTextProperties({
             horizontalalignment: "center",
             verticalalignment: "top",
-								   
-												   
-																														  
-							
-																														
-						  
             font: font,
             color: fontcolor
         });
@@ -784,16 +779,12 @@ class XCanvas2D extends Xplore {
                     }
 
                     if (px2 < this.width && px2 >= x) {
-				 
-					
-												   
                         if (x2 !== 0) {
                             if (Math.abs(x2) >= 100000)
                                 this.PrimitiveText_2(x2.toExponential(1), px2, labelpos, font, fontcolor, 0, "center", align);
                             else
                                 this.PrimitiveText_2(x2.toFixed(round), px2, labelpos, font, fontcolor, 0, "center", align);
                         }
-																													  
 
                         this.PrimitiveLine_2(px2, labelpos - 10, px2, labelpos - 5, this.settings.axis, 2);
                     }
@@ -808,11 +799,6 @@ class XCanvas2D extends Xplore {
                             this.PrimitiveText_2(x1.toFixed(round), px1 + 5, labelpos, font, fontcolor, 0, "left", align);
 
                         this.PrimitiveLine_2(px1, labelpos - 10, px1, labelpos - 5, this.settings.axis, 2);
-								   
-																			   
-																														  
-							
-																														
                     }
 
                     if (px2 < this.width && px2 >= x) {
@@ -826,7 +812,6 @@ class XCanvas2D extends Xplore {
                         this.PrimitiveLine_2(px2, labelpos - 10, px2, labelpos - 5, this.settings.axis, 2);
                     }
                 }
-			 
 
                 x1 -= intervalx;
                 x2 += intervalx;
@@ -898,11 +883,6 @@ class XCanvas2D extends Xplore {
                         }
 
                         this.PrimitiveLine_2(x + 10, py2, x + 5, py2, this.settings.axis, 2);
-								   
-												   
-																														
-							
-																													  
                     }
                 } else {
                     if (py1 > y && py1 <= this.height) {
@@ -914,14 +894,6 @@ class XCanvas2D extends Xplore {
                         }
 
                         this.PrimitiveLine_2(x - 10, py1, x - 5, py1, this.settings.axis, 2);
-				 
-					
-													
-								   
-																			   
-																														
-							
-																													  
                     }
 
                     if (py2 <= this.height && py2 > y) {
@@ -933,16 +905,8 @@ class XCanvas2D extends Xplore {
                         }
 
                         this.PrimitiveLine_2(x - 10, py2, x - 5, py2, this.settings.axis, 2);
-								   
-																			   
-																														
-							
-																													  
                     }
-
-																						 
                 }
-			 
 
                 y1 -= intervaly;
                 y2 += intervaly;
@@ -958,11 +922,11 @@ class XCanvas2D extends Xplore {
 
         this.SetProperties({
             linecolor: this.settings.axis,
-            thickness: 2
+            thickness: 1
         });
 
-        this.PrimitiveLine(x1, 0, x1, y1);
-        this.PrimitiveLine(x1, y1, this.width, y1);
+        this.PrimitiveLine(x1, 0, x1, this.height);
+        this.PrimitiveLine(0, y1, this.width, y1);
 
 
         //Labels

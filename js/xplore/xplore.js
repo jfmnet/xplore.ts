@@ -66,6 +66,15 @@ var XMENUTYPE;
     XMENUTYPE["MINIRIBBON"] = "menu-mini-ribbon";
     XMENUTYPE["RIBBON"] = "menu-ribbon";
 })(XMENUTYPE || (XMENUTYPE = {}));
+var XHEADERTYPE;
+(function (XHEADERTYPE) {
+    XHEADERTYPE["H1"] = "h1";
+    XHEADERTYPE["H2"] = "h2";
+    XHEADERTYPE["H3"] = "h3";
+    XHEADERTYPE["H4"] = "h4";
+    XHEADERTYPE["H5"] = "h5";
+    XHEADERTYPE["H6"] = "h6";
+})(XHEADERTYPE || (XHEADERTYPE = {}));
 var Xplore = /** @class */ (function () {
     function Xplore(param, classname) {
         this.element = "div";
@@ -861,6 +870,20 @@ var Xplore = /** @class */ (function () {
     }(Xplore));
     Xplore.Tab = Tab;
     //Element
+    var Header = /** @class */ (function (_super) {
+        __extends(Header, _super);
+        function Header(param) {
+            var _this = _super.call(this, param) || this;
+            _this.element = param.type ? param.type : "h1";
+            return _this;
+        }
+        Header.prototype.Refresh = function () {
+            this.object.innerHTML = "";
+            this.object.append(this.text);
+        };
+        return Header;
+    }(Xplore));
+    Xplore.Header = Header;
     var Text = /** @class */ (function (_super) {
         __extends(Text, _super);
         function Text(param) {
@@ -922,6 +945,22 @@ var Xplore = /** @class */ (function () {
             _this.type = type;
             return _this;
         }
+        Object.defineProperty(Input.prototype, "value", {
+            get: function () {
+                if (this.bind)
+                    return this.bind.object[this.bind.name];
+                else
+                    return this._value;
+            },
+            set: function (value) {
+                if (this.bind)
+                    this.bind.object[this.bind.name] = value;
+                else
+                    this._value = value;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Input.prototype.Refresh = function () {
             this.object.innerHTML = "";
             if (this.text) {
@@ -1676,6 +1715,40 @@ var Xplore = /** @class */ (function () {
         return Background;
     }(Xplore));
     Xplore.Background = Background;
+    var Equation = /** @class */ (function (_super) {
+        __extends(Equation, _super);
+        function Equation(equation, parameters) {
+            var _this = _super.call(this, undefined, "equation") || this;
+            _this.equation = equation;
+            _this.parameters = parameters;
+            return _this;
+        }
+        Equation.prototype.Refresh = function () {
+            var equation = this.equation;
+            //Equation
+            var content = "<div>" + equation + "</div>";
+            //Parameters substituted with values
+            for (var _i = 0, _a = this.parameters; _i < _a.length; _i++) {
+                var param = _a[_i];
+                equation = equation.replace(param.name, param.value);
+            }
+            content += "<div>" + equation + "</div>";
+            //Evaluated
+            var parts = equation.split("=");
+            equation = parts[1];
+            equation = equation.replace("\\over", "/");
+            equation = equation.split("$$").join("");
+            equation = equation.split("{").join("(");
+            equation = equation.split("}").join(")");
+            content += "<div>" + parts[0].trim() + " = " + window.math.evaluate(equation) + "$$</div>";
+            this.object.innerHTML = content;
+        };
+        Equation.Render = function () {
+            window.MathJax.typeset();
+        };
+        return Equation;
+    }(Xplore));
+    Xplore.Equation = Equation;
 })(Xplore || (Xplore = {}));
 window.onload = function () {
     if (this.Run)

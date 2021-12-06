@@ -15,25 +15,13 @@
 }
 
 body {
-    font: 13px normal, -apple-system, BlinkMacSystemFont, "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: -apple-system, BlinkMacSystemFont, "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     background-color: var(--C50);
-    color: var(--C50);
+    color: var(--TEXT);
     margin: 0;
     padding: 0;
     height: 100%;
     min-height: 100%;
-    overflow: hidden;
-}
-
-::-webkit-scrollbar {
-    background-color: var(--C300);
-    box-shadow: inset 0 0 6px var(--C400);
-    height: 16px;
-    width: 16px;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: var(--C500);
 }
 
 i.mdi {
@@ -127,7 +115,7 @@ i.mdi {
 }
 
 .input input, .input select {
-    border: 1px solid #CCC;
+    border: 1px solid var(--C500);
     color: #333;
     outline: none;
     padding: 8px 0;
@@ -164,8 +152,8 @@ select option {
 }
 
 .input.inline label>input, .input.inline label>select {
-    background-color: var(--C800);
-    color: var(--C50);
+    background-color: var(--C50);
+    color: var(--TEXT);
     display: inline-flex;
     padding: 4px;
     width: calc(60% - 10px);
@@ -870,10 +858,6 @@ img.icon {
     text-transform: uppercase;
 }
 
-.month-year>div, .combobox>div, label {
-    font-size: 12px;
-}
-
 .combobox>div {
     display: inline-flex;
     width: 40%;
@@ -1387,6 +1371,17 @@ img.icon {
 
 .calendar-list-today {
     background-color: var(--C800);
+}
+
+.equation mjx-container {
+    border-bottom: 1px solid var(--C100);
+    margin: 0 !important;
+    padding: 4px 16px;
+    text-align: left !important;
+}
+
+.equation mjx-math {
+    margin-right: unset !important;
 }
 
 .window-selector {

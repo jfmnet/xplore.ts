@@ -229,8 +229,6 @@ var XCanvas2D = /** @class */ (function (_super) {
         this.model.Render(this);
         if (this.settings.showruler)
             this.DrawRuler();
-        // if (this.settings.showusergrid)
-        //     this.DrawUserGrid();
     };
     XCanvas2D.prototype.DrawGrid = function () {
         if (this.settings.ischart)
@@ -563,6 +561,10 @@ var XCanvas2D = /** @class */ (function (_super) {
             intervalx *= 2;
             intervaly *= 2;
         }
+        else if (intervalsize > 150) {
+            intervalx /= 2;
+            intervaly /= 2;
+        }
         if (this.settings.ischart) {
             intervalx = 1;
             intervaly = Math.round(intervaly);
@@ -742,10 +744,10 @@ var XCanvas2D = /** @class */ (function (_super) {
         y1 = this.ToCoordY(0);
         this.SetProperties({
             linecolor: this.settings.axis,
-            thickness: 2
+            thickness: 1
         });
-        this.PrimitiveLine(x1, 0, x1, y1);
-        this.PrimitiveLine(x1, y1, this.width, y1);
+        this.PrimitiveLine(x1, 0, x1, this.height);
+        this.PrimitiveLine(0, y1, this.width, y1);
         //Labels
         font = "bold 18px sans-serif";
         this.SetTextProperties({

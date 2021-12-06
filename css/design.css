@@ -1,0 +1,6 @@
+.block-container {
+    border: 1px solid var(--C200);
+    max-width: 800px;
+    margin: 8px auto;
+    padding: 16px 32px;
+}

@@ -1,4 +1,4 @@
-function Run1() {
+function Run() {
     let view = new BeamDesign();
     view.Show();
 }

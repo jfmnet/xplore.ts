@@ -37,9 +37,19 @@ interface XploreParamTree extends XploreParam {
     data?: any;
 }
 
+interface XploreHeaderParam {
+    text: string;
+    type?: XHEADERTYPE
+}
+
 interface XMenu {
     action: Function;
     menu?: Xplore.Menu;
+}
+
+interface XEquationParam {
+    name: string;
+    value: any;
 }
 
 interface Dictionary<T> {
@@ -126,6 +136,15 @@ enum XMENUTYPE {
     DEFAULT = "menu-default",
     MINIRIBBON = "menu-mini-ribbon",
     RIBBON = "menu-ribbon"
+}
+
+enum XHEADERTYPE {
+    H1 = "h1",
+    H2 = "h2",
+    H3 = "h3",
+    H4 = "h4",
+    H5 = "h5",
+    H6 = "h6",
 }
 
 class Xplore {
@@ -1081,6 +1100,17 @@ namespace Xplore {
 
     //Element
 
+    export class Header extends Xplore {
+        constructor(param: XploreHeaderParam) {
+            super(param);
+            this.element = param.type? param.type: "h1";
+        }
+
+        Refresh(): void {
+            this.object.innerHTML = "";
+            this.object.append(this.text);
+        }
+    }
     export class Text extends Xplore {
         constructor(param: XploreParam) {
             super(param, "text");
@@ -1132,9 +1162,24 @@ namespace Xplore {
         input: HTMLInputElement;
         type: XINPUTTYPE;
         name: string;
-        value: any;
         bind: XBind;
         onchange: Function;
+
+        private _value: any;
+
+        get value(): any {
+            if (this.bind)
+                return this.bind.object[this.bind.name];
+            else
+                return this._value;
+        }
+
+        set value(value: any) {
+            if (this.bind)
+                this.bind.object[this.bind.name] = value;
+            else
+                this._value = value;
+        }
 
         constructor(type: XINPUTTYPE = XINPUTTYPE.TEXT, param?: XploreParam) {
             super(param, "input");
@@ -1143,7 +1188,6 @@ namespace Xplore {
 
             this.type = type;
         }
-
 
         Refresh(): void {
             this.object.innerHTML = "";
@@ -2067,6 +2111,46 @@ namespace Xplore {
             this.object.style.zIndex = (++Xplore.zindex).toString();
             this.Events();
         };
+    }
+    
+    export class Equation extends Xplore {
+        equation: string;
+        parameters: XEquationParam[];
+
+        constructor(equation: string, parameters: XEquationParam[]) {
+            super(undefined, "equation");
+            this.equation = equation;
+            this.parameters = parameters;
+        }
+
+        Refresh(): void {
+            let equation: string = this.equation;
+            
+            //Equation
+            let content = "<div>" + equation + "</div>";
+
+            //Parameters substituted with values
+            for (let param of this.parameters)
+                equation = equation.replace(param.name, param.value);
+
+            content += "<div>" + equation + "</div>";
+
+            //Evaluated
+            let parts = equation.split("=");
+            equation = parts[1];
+            equation = equation.replace("\\over", "/");
+            equation = equation.split("$$").join("");
+            equation = equation.split("{").join("(");
+            equation = equation.split("}").join(")");
+
+            content += "<div>" + parts[0].trim() + " = " + window.math.evaluate(equation) + "$$</div>";
+
+            this.object.innerHTML = content;
+        }
+
+        static Render(): void {
+            window.MathJax.typeset();
+        }
     }
 }
 

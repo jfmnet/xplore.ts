@@ -10,6 +10,13 @@
             "name": "jfmatrix",
             "url": "http://localhost:5530",
             "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "edge",
+            "request": "launch",
+            "name": "design",
+            "url": "http://localhost:5530/design.html",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }
