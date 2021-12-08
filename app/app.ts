@@ -1,4 +1,7 @@
-function Run1() {
-    let view = new BeamDesign();
-    view.Show();
+function Run() {
+    // let view = new BeamDesign();
+    // view.Show();
+
+    let demo = new Demo();
+    demo.Show();
 }

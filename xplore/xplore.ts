@@ -2115,35 +2115,44 @@ namespace Xplore {
     
     export class Equation extends Xplore {
         equation: string;
+        substitute: string;
+        value: number;
+        variable: string;
         parameters: XEquationParam[];
 
         constructor(equation: string, parameters: XEquationParam[]) {
             super(undefined, "equation");
-            this.equation = equation;
             this.parameters = parameters;
-        }
 
-        Refresh(): void {
-            let equation: string = this.equation;
-            
             //Equation
-            let content = "<div>" + equation + "</div>";
+            this.equation = equation;
+            this.substitute = equation;
 
             //Parameters substituted with values
             for (let param of this.parameters)
-                equation = equation.replace(param.name, param.value);
-
-            content += "<div>" + equation + "</div>";
+                this.substitute = this.substitute.replace(param.name, param.value);
 
             //Evaluated
-            let parts = equation.split("=");
+            let parts = this.substitute.split("=");
             equation = parts[1];
             equation = equation.replace("\\over", "/");
             equation = equation.split("$$").join("");
             equation = equation.split("{").join("(");
             equation = equation.split("}").join(")");
 
-            content += "<div>" + parts[0].trim() + " = " + window.math.evaluate(equation) + "$$</div>";
+            this.variable = parts[0].trim();
+            this.value = window.math.evaluate(equation);
+        }
+
+        Refresh(): void {
+            //Equation
+            let content = "<div>" + this.equation + "</div>";
+
+            //Parameters substituted with values
+            content += "<div>" + this.substitute + "</div>";
+
+            //Evaluated
+            content += "<div>" + this.variable + " = " + this.value + "$$</div>";
 
             this.object.innerHTML = content;
         }

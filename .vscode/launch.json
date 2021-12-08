@@ -17,6 +17,13 @@
             "name": "design",
             "url": "http://localhost:5530/design.html",
             "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "edge",
+            "request": "launch",
+            "name": "demo",
+            "url": "http://localhost:5530/demo.html",
+            "webRoot": "${workspaceFolder}"
         }
     ]
 }

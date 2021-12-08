@@ -1719,28 +1719,33 @@ var Xplore = /** @class */ (function () {
         __extends(Equation, _super);
         function Equation(equation, parameters) {
             var _this = _super.call(this, undefined, "equation") || this;
-            _this.equation = equation;
             _this.parameters = parameters;
-            return _this;
-        }
-        Equation.prototype.Refresh = function () {
-            var equation = this.equation;
             //Equation
-            var content = "<div>" + equation + "</div>";
+            _this.equation = equation;
+            _this.substitute = equation;
             //Parameters substituted with values
-            for (var _i = 0, _a = this.parameters; _i < _a.length; _i++) {
+            for (var _i = 0, _a = _this.parameters; _i < _a.length; _i++) {
                 var param = _a[_i];
-                equation = equation.replace(param.name, param.value);
+                _this.substitute = _this.substitute.replace(param.name, param.value);
             }
-            content += "<div>" + equation + "</div>";
             //Evaluated
-            var parts = equation.split("=");
+            var parts = _this.substitute.split("=");
             equation = parts[1];
             equation = equation.replace("\\over", "/");
             equation = equation.split("$$").join("");
             equation = equation.split("{").join("(");
             equation = equation.split("}").join(")");
-            content += "<div>" + parts[0].trim() + " = " + window.math.evaluate(equation) + "$$</div>";
+            _this.variable = parts[0].trim();
+            _this.value = window.math.evaluate(equation);
+            return _this;
+        }
+        Equation.prototype.Refresh = function () {
+            //Equation
+            var content = "<div>" + this.equation + "</div>";
+            //Parameters substituted with values
+            content += "<div>" + this.substitute + "</div>";
+            //Evaluated
+            content += "<div>" + this.variable + " = " + this.value + "$$</div>";
             this.object.innerHTML = content;
         };
         Equation.Render = function () {
