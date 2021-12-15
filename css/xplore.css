@@ -32,6 +32,14 @@ i.mdi {
     display: none;
 }
 
+.full {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
 .highlight {
     background-color: var(--C700) !important;
 }
@@ -157,6 +165,19 @@ select option {
     display: inline-flex;
     padding: 4px;
     width: calc(60% - 10px);
+}
+
+.input.inline.number label>input {
+    width: calc(60% - 68px);
+}
+
+.input.inline.number label>div.unit {
+    background-color: var(--C500);
+    border: 1px solid var(--C500);
+    color: var(--C50);
+    font-size: 0.8rem;
+    padding: 4.5px 8px;
+    width: 40px;
 }
 
 .input.inline label>select {
@@ -865,19 +886,9 @@ img.icon {
 
 /* Table */
 
-.table {
-    overflow: auto;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-}
-
 .table table {
     position: relative;
     border-collapse: collapse;
-    table-layout: fixed;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -889,8 +900,6 @@ img.icon {
 
 .table td, .table th {
     color: var(--TEXT);
-    white-space: nowrap;
-    /* box-shadow: 0 0 0 0.5px #CCC; */
     border: 1px solid #CCC;
     padding: 4px 0;
     text-align: center;
@@ -901,7 +910,6 @@ img.icon {
     border: none;
     box-shadow: 0 0 0 1px #CCC;
     height: 27px;
-    padding: 0;
 }
 
 .table tr th {
@@ -968,8 +976,8 @@ img.icon {
     position: -webkit-sticky;
     position: sticky;
     left: 0;
-    min-width: 47px;
-    max-width: 47px;
+    min-width: 24px;
+    max-width: 24px;
     padding: 0;
     z-index: 5;
 }

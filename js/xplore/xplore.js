@@ -22,11 +22,25 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+var XModelBase = /** @class */ (function () {
+    function XModelBase() {
+    }
+    return XModelBase;
+}());
 var XORIENTATION;
 (function (XORIENTATION) {
     XORIENTATION[XORIENTATION["HORIZONTAL"] = 1] = "HORIZONTAL";
     XORIENTATION[XORIENTATION["VERTICAL"] = 2] = "VERTICAL";
 })(XORIENTATION || (XORIENTATION = {}));
+var XDOCK;
+(function (XDOCK) {
+    XDOCK[XDOCK["NONE"] = 1] = "NONE";
+    XDOCK[XDOCK["LEFT"] = 2] = "LEFT";
+    XDOCK[XDOCK["RIGHT"] = 3] = "RIGHT";
+    XDOCK[XDOCK["TOP"] = 4] = "TOP";
+    XDOCK[XDOCK["BOTTOM"] = 5] = "BOTTOM";
+    XDOCK[XDOCK["FULL"] = 6] = "FULL";
+})(XDOCK || (XDOCK = {}));
 var XPOSITION;
 (function (XPOSITION) {
     XPOSITION[XPOSITION["NONE"] = 0] = "NONE";
@@ -167,6 +181,13 @@ var Xplore = /** @class */ (function () {
         child.parentcontrol = this;
         this.children.push(child);
         return child;
+    };
+    Xplore.prototype.AddRange = function (children) {
+        for (var _i = 0, _a = Object.getOwnPropertyNames(children); _i < _a.length; _i++) {
+            var name_1 = _a[_i];
+            children[name_1].parentcontrol = this;
+            this.children.push(children[name_1]);
+        }
     };
     Xplore.prototype.Clear = function () {
         this.children.forEach(function (element) {
@@ -1051,6 +1072,95 @@ var Xplore = /** @class */ (function () {
         return Input;
     }(Xplore));
     Xplore.Input = Input;
+    var NumberInput = /** @class */ (function (_super) {
+        __extends(NumberInput, _super);
+        function NumberInput(param) {
+            var _this = _super.call(this, param, "input") || this;
+            _this.classes.push("inline");
+            _this.classes.push("textbox");
+            _this.classes.push("number");
+            _this.type = XINPUTTYPE.NUMBER;
+            _this.unit = param.unit;
+            _this.value = param.value || 0;
+            return _this;
+        }
+        Object.defineProperty(NumberInput.prototype, "value", {
+            get: function () {
+                if (this.bind)
+                    return this.bind.object[this.bind.name];
+                else
+                    return this._value;
+            },
+            set: function (value) {
+                if (this.bind)
+                    this.bind.object[this.bind.name] = value;
+                else
+                    this._value = value;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        NumberInput.prototype.Refresh = function () {
+            this.object.innerHTML = "";
+            if (this.text) {
+                var label = document.createElement("label");
+                this.object.appendChild(label);
+                var text = document.createElement("div");
+                text.innerText = this.text;
+                label.appendChild(text);
+                var input = document.createElement("input");
+                input.type = this.type;
+                if (this.value !== undefined)
+                    input.value = NumberInput.FormatValue(this.unit.value * this.value);
+                label.appendChild(input);
+                if (this.readonly)
+                    input.setAttribute("disabled", "disabled");
+                this.input = input;
+                var unit = document.createElement("div");
+                unit.innerHTML = this.unit.name || "&nbsp;";
+                unit.classList.add("unit");
+                label.appendChild(unit);
+            }
+            else {
+                var input = document.createElement("input");
+                input.type = this.type;
+                if (this.value !== undefined)
+                    input.value = this.value.toString();
+                this.object.appendChild(input);
+                if (this.readonly)
+                    input.setAttribute("disabled", "disabled");
+                this.input = input;
+            }
+            this.Events();
+        };
+        ;
+        NumberInput.prototype.Events = function () {
+            if (!this.readonly) {
+                var input = this.object.querySelector("input");
+                var self_2 = this;
+                input.addEventListener('input', function () {
+                    self_2.value = parseFloat(this.value) / self_2.unit.value;
+                    if (self_2.bind)
+                        self_2.bind.object[self_2.bind.name] = self_2.value;
+                    if (self_2.onchange)
+                        self_2.onchange(self_2);
+                });
+            }
+        };
+        ;
+        NumberInput.prototype.UnitValue = function () {
+            return this.unit.value * this.value;
+        };
+        NumberInput.prototype.FormattedValue = function () {
+            return NumberInput.FormatValue(this.unit.value * this.value);
+        };
+        NumberInput.FormatValue = function (number) {
+            return number.toFixed(NumberInput.decimal);
+        };
+        NumberInput.decimal = 3;
+        return NumberInput;
+    }(Xplore));
+    Xplore.NumberInput = NumberInput;
     var Checkbox = /** @class */ (function (_super) {
         __extends(Checkbox, _super);
         function Checkbox(param) {
@@ -1630,6 +1740,8 @@ var Xplore = /** @class */ (function () {
         __extends(Table, _super);
         function Table(param) {
             var _this = _super.call(this, undefined, "table") || this;
+            if (param.dock && param.dock === XDOCK.FULL)
+                _this.classes.push(".full");
             _this.columns = param.columns;
             _this.data = param.data;
             return _this;
@@ -1658,11 +1770,16 @@ var Xplore = /** @class */ (function () {
             this.fragment.appendChild(this.footer);
             this.RefreshFooter();
             this.object.appendChild(this.fragment);
+            this.Events();
         };
         Table.prototype.RefreshHeader = function () {
             var th;
             var tr = document.createElement("tr");
             this.header.appendChild(tr);
+            //Row header
+            th = document.createElement("th");
+            tr.appendChild(th);
+            //Column header
             for (var _i = 0, _a = this.columns; _i < _a.length; _i++) {
                 var column = _a[_i];
                 th = document.createElement("th");
@@ -1671,32 +1788,69 @@ var Xplore = /** @class */ (function () {
             }
         };
         Table.prototype.RefreshBody = function () {
-            var tr;
-            var td;
-            var index;
-            for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
-                var row = _a[_i];
-                tr = document.createElement("tr");
-                this.body.appendChild(tr);
-                index = 0;
-                for (var _b = 0, _c = this.columns; _b < _c.length; _b++) {
-                    var column = _c[_b];
+            if (this.body) {
+                var tr = void 0;
+                var td = void 0;
+                var index = void 0;
+                var rowindex = 0;
+                for (var _i = 0, _a = this.data; _i < _a.length; _i++) {
+                    var row = _a[_i];
+                    tr = document.createElement("tr");
+                    this.body.appendChild(tr);
+                    index = 0;
                     td = document.createElement("td");
-                    if (row[column.name] instanceof Xplore) {
-                        row[column.name].Show(td);
-                    }
-                    else if (column.name) {
-                        td.innerHTML = row[column.name];
-                    }
-                    else {
-                        td.innerHTML = row[index];
-                    }
+                    td.innerHTML = (++rowindex).toString();
                     tr.appendChild(td);
-                    index++;
+                    for (var _b = 0, _c = this.columns; _b < _c.length; _b++) {
+                        var column = _c[_b];
+                        td = document.createElement("td");
+                        if (row[column.name] instanceof Xplore) {
+                            row[column.name].Show(td);
+                        }
+                        else if (column.name) {
+                            td.innerHTML = row[column.name];
+                        }
+                        else {
+                            td.innerHTML = row[index];
+                        }
+                        tr.appendChild(td);
+                        index++;
+                    }
                 }
             }
         };
         Table.prototype.RefreshFooter = function () {
+        };
+        Table.prototype.AddRows = function (count) {
+            var row;
+            for (var i = 0; i < count; i++) {
+                row = {};
+                for (var _i = 0, _a = this.columns; _i < _a.length; _i++) {
+                    var column = _a[_i];
+                    row[column.name] = "0";
+                }
+                this.data.push(row);
+            }
+            this.RefreshBody();
+        };
+        Table.prototype.Events = function () {
+            var handle;
+            var startindex;
+            var table = this.object.querySelector("table");
+            table.onclick = function (e) {
+                startindex = 0;
+                handle = true;
+                for (var i = 0; i < e.path.length; i++) {
+                    if (e.path[i].localName === "td") {
+                        startindex = i;
+                        break;
+                    }
+                    else if (e.path[i].localName === "th") {
+                        handle = false;
+                        break;
+                    }
+                }
+            };
         };
         return Table;
     }(Xplore));
@@ -1717,26 +1871,30 @@ var Xplore = /** @class */ (function () {
     Xplore.Background = Background;
     var Equation = /** @class */ (function (_super) {
         __extends(Equation, _super);
-        function Equation(equation, parameters) {
+        function Equation(equation, parameters, unit) {
             var _this = _super.call(this, undefined, "equation") || this;
             _this.parameters = parameters;
+            _this.unit = unit;
             //Equation
             _this.equation = equation;
             _this.substitute = equation;
+            var substitute = equation;
             //Parameters substituted with values
             for (var _i = 0, _a = _this.parameters; _i < _a.length; _i++) {
                 var param = _a[_i];
-                _this.substitute = _this.substitute.replace(param.name, param.value);
+                _this.substitute = _this.substitute.split(" " + param.name + " ").join(NumberInput.FormatValue(param.value.UnitValue()));
+                substitute = substitute.split(" " + param.name + " ").join(param.value.UnitValue().toString());
             }
             //Evaluated
-            var parts = _this.substitute.split("=");
+            var parts = substitute.split("=");
             equation = parts[1];
-            equation = equation.replace("\\over", "/");
+            equation = equation.split("\\sqrt").join("sqrt");
+            equation = equation.split("\\over").join("/");
             equation = equation.split("$$").join("");
             equation = equation.split("{").join("(");
             equation = equation.split("}").join(")");
             _this.variable = parts[0].trim();
-            _this.value = window.math.evaluate(equation);
+            _this.value = new Xplore.NumberInput({ value: window.math.evaluate(equation) / _this.unit.value, unit: _this.unit });
             return _this;
         }
         Equation.prototype.Refresh = function () {
@@ -1745,7 +1903,7 @@ var Xplore = /** @class */ (function () {
             //Parameters substituted with values
             content += "<div>" + this.substitute + "</div>";
             //Evaluated
-            content += "<div>" + this.variable + " = " + this.value + "$$</div>";
+            content += "<div>" + this.variable + " = " + this.value.FormattedValue() + " \\ \\text {" + this.value.unit.name + "}$$</div>";
             this.object.innerHTML = content;
         };
         Equation.Render = function () {

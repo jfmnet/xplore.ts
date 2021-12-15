@@ -1,6 +1,35 @@
+body {
+    background-color: var(--C300);
+    font-size: 0.85rem;
+}
+
 .block-container {
-    border: 1px solid var(--C200);
+    background-color: #FFF;
     max-width: 800px;
     margin: 8px auto;
     padding: 16px 32px;
+    position: relative;
+}
+
+.block-container .canvas {
+    bottom: unset !important;
+    left: unset !important;
+    right: 16px !important;
+    top: unset !important;
+    height: 300px !important;
+    width: 300px !important;
+    z-index: 10;
+}
+
+.block-container .inline.input {
+    display: inline-block;
+    width: calc(50% - 32px);
+}
+
+.compute-button {
+    margin: 16px 0;
+}
+
+.table tr:hover {
+    background-color: var(--C50);
 }

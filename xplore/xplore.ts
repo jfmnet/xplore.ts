@@ -1,9 +1,10 @@
 interface XploreParam {
-    text?: any,
-    icon?: string,
-    classes?: string[],
+    text?: any;
+    icon?: string;
+    classes?: string[];
     onclick?: Function;
-    tag?: any,
+    tag?: any;
+    dock?: XDOCK;
 }
 
 interface XploreParamMenu extends XploreParam {
@@ -37,6 +38,11 @@ interface XploreParamTree extends XploreParam {
     data?: any;
 }
 
+interface XploreParamNumber extends XploreParam {
+    value?: number;
+    unit: XNameValue;
+}
+
 interface XploreHeaderParam {
     text: string;
     type?: XHEADERTYPE
@@ -47,9 +53,14 @@ interface XMenu {
     menu?: Xplore.Menu;
 }
 
+interface XNameValue {
+    name: string,
+    value: number
+}
+
 interface XEquationParam {
-    name: string;
-    value: any;
+    name: string,
+    value: Xplore.NumberInput
 }
 
 interface Dictionary<T> {
@@ -72,6 +83,7 @@ interface XTableParam {
     data: Object[];
     showheader?: boolean;
     showfooter?: boolean;
+    dock?: XDOCK;
 }
 
 interface XTableParamColumn {
@@ -94,9 +106,21 @@ interface XCalendarItem {
     type: string;
 }
 
+class XModelBase {
+}
+
 enum XORIENTATION {
     HORIZONTAL = 1,
     VERTICAL = 2
+}
+
+enum XDOCK {
+    NONE = 1,
+    LEFT = 2,
+    RIGHT = 3,
+    TOP = 4,
+    BOTTOM = 5,
+    FULL = 6
 }
 
 enum XPOSITION {
@@ -271,6 +295,13 @@ class Xplore {
         child.parentcontrol = this;
         this.children.push(child);
         return child;
+    }
+
+    AddRange(children: XModelBase): void {
+        for (let name of Object.getOwnPropertyNames(children)) {
+            children[name].parentcontrol = this;
+            this.children.push(children[name]);
+        }
     }
 
     Clear(): void {
@@ -1103,7 +1134,7 @@ namespace Xplore {
     export class Header extends Xplore {
         constructor(param: XploreHeaderParam) {
             super(param);
-            this.element = param.type? param.type: "h1";
+            this.element = param.type ? param.type : "h1";
         }
 
         Refresh(): void {
@@ -1303,6 +1334,118 @@ namespace Xplore {
         };
     }
 
+    export class NumberInput extends Xplore {
+        input: HTMLInputElement;
+        unit: XNameValue;
+        type: XINPUTTYPE;
+        bind: XBind;
+        onchange: Function;
+
+        static decimal: number = 3;
+
+        private _value: number;
+
+        get value(): number {
+            if (this.bind)
+                return this.bind.object[this.bind.name];
+            else
+                return this._value;
+        }
+
+        set value(value: number) {
+            if (this.bind)
+                this.bind.object[this.bind.name] = value;
+            else
+                this._value = value;
+        }
+
+        constructor(param?: XploreParamNumber) {
+            super(param, "input");
+            this.classes.push("inline");
+            this.classes.push("textbox");
+            this.classes.push("number");
+
+            this.type = XINPUTTYPE.NUMBER;
+            this.unit = param.unit;
+            this.value = param.value || 0;
+        }
+
+        Refresh(): void {
+            this.object.innerHTML = "";
+
+            if (this.text) {
+                let label = document.createElement("label");
+                this.object.appendChild(label);
+
+                let text = document.createElement("div");
+                text.innerText = this.text;
+                label.appendChild(text);
+
+                let input = document.createElement("input");
+                input.type = this.type;
+
+                if (this.value !== undefined)
+                    input.value = NumberInput.FormatValue(this.unit.value * this.value);
+
+                label.appendChild(input);
+
+                if (this.readonly)
+                    input.setAttribute("disabled", "disabled");
+
+                this.input = input;
+
+                let unit = document.createElement("div");
+                unit.innerHTML = this.unit.name || "&nbsp;";
+                unit.classList.add("unit");
+                label.appendChild(unit);
+
+            } else {
+                let input = document.createElement("input");
+                input.type = this.type;
+
+                if (this.value !== undefined)
+                    input.value = this.value.toString();
+
+                this.object.appendChild(input);
+
+                if (this.readonly)
+                    input.setAttribute("disabled", "disabled");
+
+                this.input = input;
+            }
+
+            this.Events();
+        };
+
+        Events(): void {
+            if (!this.readonly) {
+                let input = this.object.querySelector("input");
+                let self = this;
+
+                input.addEventListener('input', function () {
+                    self.value = parseFloat(this.value) / self.unit.value;
+
+                    if (self.bind)
+                        self.bind.object[self.bind.name] = self.value;
+
+                    if (self.onchange)
+                        self.onchange(self);
+                });
+            }
+        };
+
+        UnitValue(): number {
+            return this.unit.value * this.value;
+        }
+
+        FormattedValue(): string {
+            return NumberInput.FormatValue(this.unit.value * this.value);
+        }
+
+        static FormatValue(number: number): string {
+            return number.toFixed(NumberInput.decimal);
+        }
+    }
     export class Checkbox extends Input {
         constructor(param?: XploreParamCheckbox) {
             super(XINPUTTYPE.CHECKBOX, param);
@@ -2019,6 +2162,9 @@ namespace Xplore {
         constructor(param: XTableParam) {
             super(undefined, "table");
 
+            if (param.dock && param.dock === XDOCK.FULL)
+                this.classes.push(".full");
+
             this.columns = param.columns;
             this.data = param.data;
         }
@@ -2053,6 +2199,8 @@ namespace Xplore {
             this.RefreshFooter();
 
             this.object.appendChild(this.fragment);
+
+            this.Events();
         }
 
         RefreshHeader(): void {
@@ -2061,6 +2209,11 @@ namespace Xplore {
             let tr = document.createElement("tr");
             this.header.appendChild(tr);
 
+            //Row header
+            th = document.createElement("th");
+            tr.appendChild(th);
+
+            //Column header
             for (let column of this.columns) {
                 th = document.createElement("th");
                 th.innerHTML = column.text;
@@ -2069,35 +2222,80 @@ namespace Xplore {
         }
 
         RefreshBody(): void {
-            let tr: HTMLTableRowElement;
-            let td: HTMLTableCellElement;
-            let index: number;
+            if (this.body) {
+                let tr: HTMLTableRowElement;
+                let td: HTMLTableCellElement;
+                let index: number;
+                let rowindex: number = 0;
 
-            for (let row of this.data) {
-                tr = document.createElement("tr");
-                this.body.appendChild(tr);
+                for (let row of this.data) {
+                    tr = document.createElement("tr");
+                    this.body.appendChild(tr);
 
-                index = 0;
+                    index = 0;
 
-                for (let column of this.columns) {
                     td = document.createElement("td");
-
-                    if (row[column.name] instanceof Xplore) {
-                        row[column.name].Show(td);
-                    } else if (column.name) {
-                        td.innerHTML = row[column.name];
-                    } else {
-                        td.innerHTML = row[index];
-                    }
-
+                    td.innerHTML = (++rowindex).toString();
                     tr.appendChild(td);
 
-                    index++;
+                    for (let column of this.columns) {
+                        td = document.createElement("td");
+
+                        if (row[column.name] instanceof Xplore) {
+                            row[column.name].Show(td);
+                        } else if (column.name) {
+                            td.innerHTML = row[column.name];
+                        } else {
+                            td.innerHTML = row[index];
+                        }
+
+                        tr.appendChild(td);
+
+                        index++;
+                    }
                 }
             }
         }
 
         RefreshFooter(): void {
+        }
+
+        AddRows(count: number): void {
+            let row: Object;
+
+            for (let i = 0; i < count; i++) {
+                row = {};
+
+                for (let column of this.columns) {
+                    row[column.name] = "0";
+                }
+
+                this.data.push(row);
+            }
+
+            this.RefreshBody();
+        }
+
+        Events(): void {
+            let handle: boolean;
+            let startindex: number;
+
+            let table = this.object.querySelector("table");
+
+            table.onclick = function (e: Event) {
+                startindex = 0;
+                handle = true;
+
+                for (let i = 0; i < e.path.length; i++) {
+                    if (e.path[i].localName === "td") {
+                        startindex = i;
+                        break;
+                    } else if (e.path[i].localName === "th") {
+                        handle = false;
+                        break;
+                    }
+                }
+            };
         }
     }
 
@@ -2112,36 +2310,44 @@ namespace Xplore {
             this.Events();
         };
     }
-    
+
     export class Equation extends Xplore {
         equation: string;
         substitute: string;
-        value: number;
+        value: Xplore.NumberInput;
         variable: string;
         parameters: XEquationParam[];
+        unit: XNameValue;
 
-        constructor(equation: string, parameters: XEquationParam[]) {
+        constructor(equation: string, parameters: XEquationParam[], unit: XNameValue) {
             super(undefined, "equation");
+
             this.parameters = parameters;
+            this.unit = unit;
 
             //Equation
             this.equation = equation;
             this.substitute = equation;
 
+            let substitute = equation;
+
             //Parameters substituted with values
-            for (let param of this.parameters)
-                this.substitute = this.substitute.replace(param.name, param.value);
+            for (let param of this.parameters) {
+                this.substitute = this.substitute.split(" " + param.name + " ").join(NumberInput.FormatValue(param.value.UnitValue()));
+                substitute = substitute.split(" " + param.name + " ").join(param.value.UnitValue().toString());
+            }
 
             //Evaluated
-            let parts = this.substitute.split("=");
+            let parts = substitute.split("=");
             equation = parts[1];
-            equation = equation.replace("\\over", "/");
+            equation = equation.split("\\sqrt").join("sqrt");
+            equation = equation.split("\\over").join("/");
             equation = equation.split("$$").join("");
             equation = equation.split("{").join("(");
             equation = equation.split("}").join(")");
 
             this.variable = parts[0].trim();
-            this.value = window.math.evaluate(equation);
+            this.value = new Xplore.NumberInput({ value: window.math.evaluate(equation) / this.unit.value, unit: this.unit });
         }
 
         Refresh(): void {
@@ -2152,7 +2358,7 @@ namespace Xplore {
             content += "<div>" + this.substitute + "</div>";
 
             //Evaluated
-            content += "<div>" + this.variable + " = " + this.value + "$$</div>";
+            content += "<div>" + this.variable + " = " + this.value.FormattedValue() + " \\ \\text {" + this.value.unit.name + "}$$</div>";
 
             this.object.innerHTML = content;
         }

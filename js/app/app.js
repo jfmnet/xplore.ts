@@ -1,7 +1,5 @@
 function Run() {
-    // let view = new BeamDesign();
-    // view.Show();
-    var demo = new Demo();
-    demo.Show();
+    var view = new BeamDesign();
+    view.Show();
 }
 //# sourceMappingURL=app.js.map
