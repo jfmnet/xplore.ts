@@ -1153,6 +1153,104 @@ namespace Xplore {
         }
     }
 
+    export class EditableText extends Xplore {
+        constructor(param?: XploreParam) {
+            super(param, "text");
+
+            //Add class to differentiate it from text
+            this.classes.push("editable");
+
+            if (!this.text)
+                this.text = "";
+        }
+
+        Refresh(): void {
+            //Clear element first
+            this.object.innerHTML = "";
+
+            //Append text
+            this.object.append(this.text);
+
+            //Bind events
+            this.Events();
+        }
+
+        Events(): void {
+            let self = this;
+
+            this.object.onclick = function (e) {
+                if (self.object.parentElement.localName === "td") {
+                    let table = self.object.parentElement.parentElement.parentElement;
+                    let tds = table.querySelectorAll("td.highlight");
+
+                    tds.forEach(function (td: HTMLTableCellElement) {
+                        td.classList.remove("highlight");
+                    })
+
+                    self.object.parentElement.classList.add("highlight");
+                }
+            };
+
+            this.object.ondblclick = function (e) {
+                e.stopPropagation();
+                self.EditText();
+            };
+        }
+
+        EditText(): void {
+            let self = this;
+        
+            //Clear the element
+            this.object.innerHTML = "";
+
+            //Add input box
+            let input = document.createElement("input");
+            this.object.appendChild(input);
+
+            //Set the value of the input box
+            input.value = this.text;
+
+            //Set focus
+            input.focus();
+
+            //Select all text in the input box
+            input.setSelectionRange(0, input.value.length)
+
+            //handle double click event
+            input.ondblclick = function (e) {
+                e.stopPropagation();
+            };
+
+            //Handle onkeydown event
+            input.onkeydown = function (e) {
+                if (e.key === "Enter") {
+                    //When user press enter
+                    //Remove input box
+                    self.object.innerHTML = "";
+
+                    //Set text to the value of input
+                    self.text = input.value;
+
+                    //Show text
+                    self.object.append(self.text);
+                }
+            };
+
+            //Handle lost focus event
+            input.onblur = function (e) {
+                //When user press enter
+                //Remove input box
+                self.object.innerHTML = "";
+
+                //Set text to the value of input
+                self.text = input.value;
+
+                //Show text
+                self.object.append(self.text);
+            };
+        }
+    }
+
     export class TextBlock extends Xplore {
         constructor(param: XploreParam) {
             super(param, "textblock");
@@ -2280,22 +2378,11 @@ namespace Xplore {
             let handle: boolean;
             let startindex: number;
 
-            let table = this.object.querySelector("table");
+            let cells = this.object.querySelectorAll("td");
 
-            table.onclick = function (e: Event) {
-                startindex = 0;
-                handle = true;
-
-                for (let i = 0; i < e.path.length; i++) {
-                    if (e.path[i].localName === "td") {
-                        startindex = i;
-                        break;
-                    } else if (e.path[i].localName === "th") {
-                        handle = false;
-                        break;
-                    }
-                }
-            };
+            // cells.forEach( function(cell: HTMLTableCellElement) {
+            //     cell.focus();
+            // });
         }
     }
 

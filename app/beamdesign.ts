@@ -79,6 +79,18 @@ class BeamDesign {
 
         container.Add(button);
 
+        let data: Object[] = [];
+
+        for (let i = 0; i < 10; i++) {
+            data.push({
+                b: new Xplore.EditableText(),
+                h: new Xplore.EditableText(),
+                cc: new Xplore.EditableText(),
+                fc: new Xplore.EditableText(),
+                fy: new Xplore.EditableText(),
+            });
+        }
+
         let table = container.Add(new Xplore.Table({
             columns: [
                 { name: "b", text: "Width"},
@@ -87,10 +99,8 @@ class BeamDesign {
                 { name: "fc", text: "Concrete<br/>Compressive Strength"},
                 { name: "fy", text: "Steel<br/>Yield Strength"},
             ], 
-            data: [],
+            data: data,
         })) as Xplore.Table;
-
-        table.AddRows(10);
 
         container.Show();
     }

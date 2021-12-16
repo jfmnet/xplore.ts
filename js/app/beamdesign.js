@@ -55,6 +55,16 @@ var BeamDesign = /** @class */ (function () {
             classes: ["compute-button"]
         });
         container.Add(button);
+        var data = [];
+        for (var i = 0; i < 10; i++) {
+            data.push({
+                b: new Xplore.EditableText(),
+                h: new Xplore.EditableText(),
+                cc: new Xplore.EditableText(),
+                fc: new Xplore.EditableText(),
+                fy: new Xplore.EditableText(),
+            });
+        }
         var table = container.Add(new Xplore.Table({
             columns: [
                 { name: "b", text: "Width" },
@@ -63,9 +73,8 @@ var BeamDesign = /** @class */ (function () {
                 { name: "fc", text: "Concrete<br/>Compressive Strength" },
                 { name: "fy", text: "Steel<br/>Yield Strength" },
             ],
-            data: [],
+            data: data,
         }));
-        table.AddRows(10);
         container.Show();
     };
     BeamDesign.prototype.DesignLongitudinalBars = function () {

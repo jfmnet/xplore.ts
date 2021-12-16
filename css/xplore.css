@@ -901,7 +901,6 @@ img.icon {
 .table td, .table th {
     color: var(--TEXT);
     border: 1px solid #CCC;
-    padding: 4px 0;
     text-align: center;
     position: relative;
 }
@@ -994,7 +993,6 @@ img.icon {
 }
 
 .table td input {
-    background-color: #FFC;
     border: none;
     outline: none;
     width: calc(100% - 8px);
@@ -1039,6 +1037,25 @@ img.icon {
 
 .table th:hover .header-tool {
     display: block;
+}
+
+.table td input {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding: 4px;
+}
+
+.table td.highlight {
+    background-color: var(--C100) !important;
+}
+
+.editable.text {
+    min-height: 1rem;
+    height: 100%;
+    width: 100%;
 }
 
 .tree {
